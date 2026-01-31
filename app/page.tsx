@@ -10,6 +10,8 @@ import { MapView } from "@/features/map/ui/map-view";
 import { MapOverlayToggle } from "@/features/map/ui/map-overlay-toggle";
 import { useWeatherData } from "@/features/weather/model/use-weather-data";
 import { useAirQualityData } from "@/features/air-quality/model/use-air-quality-data";
+import { getAirQualitySeries } from "@/lib/domain/air-quality-series";
+import { getAirQualitySnapshot } from "@/lib/domain/air-quality-snapshot";
 import type { Location } from "@/lib/types/location";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -110,7 +112,8 @@ export default function Home() {
     cities.find((city) => city.id === selectedCityId) ?? cities[0];
 
   const weatherQuery = useWeatherData(activeCity, weatherRange);
-  const airQuery = useAirQualityData(activeCity, airRange);
+  const air24Query = useAirQualityData(activeCity, "24h");
+  const air5dQuery = useAirQualityData(activeCity, "5d");
 
   const weatherSnapshot = useMemo(() => {
     if (!weatherQuery.data?.hourly) return undefined;
@@ -125,16 +128,16 @@ export default function Home() {
     };
   }, [weatherQuery.data]);
 
-  const airSnapshot = useMemo(() => {
-    if (!airQuery.data?.hourly) return undefined;
-    const index = findClosestIndex(airQuery.data.hourly.time);
-    return {
-      pm25: airQuery.data.hourly.pm2_5[index],
-      pm10: airQuery.data.hourly.pm10[index],
-      nitrogenDioxide: airQuery.data.hourly.nitrogen_dioxide[index],
-      ozone: airQuery.data.hourly.ozone[index],
-    };
-  }, [airQuery.data]);
+  const airSnapshot = useMemo(
+    () => getAirQualitySnapshot(air24Query.data?.hourly),
+    [air24Query.data],
+  );
+  const airSeries = useMemo(() => {
+    if (airRange === "24h") {
+      return getAirQualitySeries(air24Query.data?.hourly, "24h");
+    }
+    return getAirQualitySeries(air5dQuery.data?.hourly, "5d");
+  }, [air24Query.data, air5dQuery.data, airRange]);
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -276,21 +279,37 @@ export default function Home() {
                 pm10={airSnapshot?.pm10 ?? 0}
                 nitrogenDioxide={airSnapshot?.nitrogenDioxide ?? 0}
                 ozone={airSnapshot?.ozone ?? 0}
-                isLoading={airQuery.isLoading}
+                isLoading={
+                  air24Query.isLoading || air24Query.isFetching || !airSnapshot
+                }
                 icon={<Wind size={16} className="text-muted-foreground" />}
               />
-              {airQuery.data?.hourly ? (
-                <AQChart
-                  title="PM2.5 推移"
-                  data={airQuery.data.hourly}
-                  dataKey="pm2_5"
-                  range={airRange}
-                  timeZone={airQuery.data.timezone}
-                  onRangeChange={setAirRange}
-                />
-              ) : (
-                <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
-              )}
+              {airRange === "24h" &&
+                (airSeries && !air24Query.isFetching ? (
+                  <AQChart
+                    title="PM2.5 推移"
+                    data={airSeries}
+                    dataKey="pm2_5"
+                    range="24h"
+                    timeZone={air24Query.data?.timezone ?? activeCity.timezone}
+                    onRangeChange={setAirRange}
+                  />
+                ) : (
+                  <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
+                ))}
+              {airRange === "5d" &&
+                (airSeries && !air5dQuery.isFetching ? (
+                  <AQChart
+                    title="PM2.5 推移"
+                    data={airSeries}
+                    dataKey="pm2_5"
+                    range="5d"
+                    timeZone={air5dQuery.data?.timezone ?? activeCity.timezone}
+                    onRangeChange={setAirRange}
+                  />
+                ) : (
+                  <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
+                ))}
             </section>
 
             <section className="relative h-[320px] overflow-hidden rounded-3xl border bg-background p-3 shadow-sm md:h-[420px] xl:h-auto xl:p-4">
