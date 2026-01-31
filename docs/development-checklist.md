@@ -9,7 +9,8 @@
 ### 0-1. 仕様の固定
 
 - [ ] アプリ名とコンセプトを 1 行で決定（City Observatory - 都市の"いま"を観測するダッシュボード）
-- [ ] 必須機能を 5 つに固定（検索/地図/天気/AQ/比較）
+- [ ] MVP 機能を固定（検索/天気/AQ/地図/レスポンシブ）
+- [ ] 比較/派生/レイヤーは MVP 後に段階導入する方針を明記
 - [ ] 技術スタックを明記（Next.js 16 + TypeScript + shadcn/ui + MapLibre + Recharts）
 - [ ] データソースを確定（Open-Meteo + MapTiler）
 - [ ] 非商用・ポートフォリオ用途であることを README に記載
@@ -31,6 +32,29 @@
 - [ ] 本番 URL を決定（例: `city-observatory.vercel.app` or 独自ドメイン）
 - [ ] ドメイン使用の場合、DNS 設定準備
 - [ ] Vercel アカウント確認（GitHub と連携済みか）
+
+---
+
+### 0-4. 設計原則の確認（簡潔さ優先）
+
+- [ ] 責務分離と単一責任を明文化（UI/Model/Domain を分割）
+- [ ] useRef/useEffect は原則使わない方針を共有（不可避時は最小範囲）
+- [ ] any 禁止を共有（不可避時は局所化＋理由の記載）
+- [ ] 複雑な仕様は MVP 後に段階導入する方針を確認
+
+---
+
+### 0-5. 実装順序（MVP ファースト）
+
+1. 都市検索（入力 + サジェスト）
+2. 天気の現在値表示
+3. ダッシュボードの基本レイアウト
+4. 地図表示（マーカー + クレジット）
+5. 天気チャート（24h → 7d）
+6. 大気質の現在値 → チャート
+7. 仕上げ（レスポンシブ・エラー/ローディング）
+
+**MVP 後**: 比較 → 派生指標 → 地図レイヤー → テスト強化
 
 ---
 
@@ -153,6 +177,16 @@ git push -u origin main
 
   ```bash
   NEXT_PUBLIC_MAPTILER_KEY=your_dev_key_here
+  NEXT_PUBLIC_MAP_STYLE_LIGHT=https://api.maptiler.com/maps/streets-v2/style.json
+  NEXT_PUBLIC_MAP_STYLE_DARK=https://api.maptiler.com/maps/streets-v2-dark/style.json
+  NEXT_PUBLIC_DEFAULT_CITY=tokyo
+  NEXT_PUBLIC_FEATURE_MAP=true
+  ```
+
+- [ ] `.env.production` 作成（本番用の値）
+
+  ```bash
+  NEXT_PUBLIC_MAPTILER_KEY=your_prod_key_here
   NEXT_PUBLIC_MAP_STYLE_LIGHT=https://api.maptiler.com/maps/streets-v2/style.json
   NEXT_PUBLIC_MAP_STYLE_DARK=https://api.maptiler.com/maps/streets-v2-dark/style.json
   NEXT_PUBLIC_DEFAULT_CITY=tokyo

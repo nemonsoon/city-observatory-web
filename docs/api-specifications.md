@@ -417,18 +417,21 @@ GET https://air-quality-api.open-meteo.com/v1/air-quality?latitude=35.6895&longi
 }
 ```
 
-### 3.4 AQI 分類（参考）
+### 3.4 空気の状態ラベル（簡易・暫定）
 
-PM2.5 濃度に基づく AQI（Air Quality Index）の一般的な分類:
+**方針**: 厳密な AQI を採用せず、**PM2.5 を元にした簡易ラベル**で「それっぽく」見せる。
+ポートフォリオ用途のため、**正確な基準ではない**ことを明記する。
 
-| PM2.5 濃度（μg/m³） | AQI 分類                       | レベル           |
-| ------------------- | ------------------------------ | ---------------- |
-| 0 - 12              | Good                           | 良好             |
-| 12.1 - 35.4         | Moderate                       | 普通             |
-| 35.5 - 55.4         | Unhealthy for Sensitive Groups | 敏感な人に影響   |
-| 55.5 - 150.4        | Unhealthy                      | 健康に影響       |
-| 150.5 - 250.4       | Very Unhealthy                 | 非常に健康に影響 |
-| 250.5+              | Hazardous                      | 危険             |
+**推測（暫定ルール）**: PM2.5 濃度に基づく 4 段階のざっくり分類
+
+| PM2.5 濃度（μg/m³） | ラベル | 表示例         |
+| ------------------- | ------ | -------------- |
+| 0 - 12              | 良い   | 良好           |
+| 12.1 - 35.4         | 注意   | 普通           |
+| 35.5 - 55.4         | 悪い   | 敏感な人は注意 |
+| 55.5+               | 危険   | 警戒           |
+
+※上記は推測。厳密な基準ではないため、実装時に変更してよい。
 
 ### 3.5 実装例（TypeScript）
 
@@ -609,8 +612,8 @@ type MapViewClientProps = {
 
 // トップレベル関数はfunction宣言（coding-guidelines準拠）
 export function MapViewClient({ center, zoom }: MapViewClientProps) {
-  // undefinedを優先（coding-guidelines準拠）
-  const mapContainer = useRef<HTMLDivElement | undefined>(undefined);
+  // ref は React 標準の null 初期化を許容
+  const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<maplibregl.Map | undefined>(undefined);
 
   useEffect(() => {
@@ -637,7 +640,7 @@ export function MapViewClient({ center, zoom }: MapViewClientProps) {
 
   return (
     <div className="relative w-full h-full">
-      <div ref={mapContainer as any} className="w-full h-full" />
+      <div ref={mapContainer} className="w-full h-full" />
 
       {/* MapTilerロゴ（Freeプラン必須） */}
       <div className="absolute bottom-2 left-2 z-10">
@@ -719,9 +722,9 @@ export function useWeatherData(location: Location | null, range: "24h" | "7d") {
     },
     enabled: !!location,
     staleTime: 15 * 60 * 1000,
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: unknown) => {
       // 429エラーは再試行しない
-      if (error?.status === 429) return false;
+      if (error instanceof APIError && error.status === 429) return false;
       // その他は2回まで再試行
       return failureCount < 2;
     },
