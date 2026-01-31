@@ -269,6 +269,37 @@ export default function Home() {
               />
             </section>
           </div>
+          <footer className="rounded-3xl border bg-background px-6 py-4 text-xs text-muted-foreground shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span>Weather data by Open-Meteo.com</span>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  className="underline-offset-4 hover:underline"
+                  href="https://open-meteo.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open-Meteo
+                </a>
+                <a
+                  className="underline-offset-4 hover:underline"
+                  href="https://www.maptiler.com/copyright/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  MapTiler
+                </a>
+                <a
+                  className="underline-offset-4 hover:underline"
+                  href="https://www.openstreetmap.org/copyright"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  OpenStreetMap
+                </a>
+              </div>
+            </div>
+          </footer>
         </main>
       </div>
     </div>
