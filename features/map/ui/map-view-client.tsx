@@ -21,12 +21,14 @@ type MapViewClientProps = {
   center: [number, number];
   zoom?: number;
   markers?: Array<{ lng: number; lat: number; label?: string }>;
+  overlay?: "none" | "precipitation";
 };
 
 export function MapViewClient({
   center,
   zoom = 10,
   markers,
+  overlay = "none",
 }: MapViewClientProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | undefined>(undefined);
@@ -67,6 +69,42 @@ export function MapViewClient({
       mapRef.current = undefined;
     };
   }, [center, zoom, markers, styleUrl]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const map = mapRef.current;
+    const sourceId = "precipitation-source";
+    const layerId = "precipitation-layer";
+    const tileUrl =
+      "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png";
+
+    const hasLayer = Boolean(map.getLayer(layerId));
+    const hasSource = Boolean(map.getSource(sourceId));
+
+    if (overlay === "precipitation") {
+      if (!hasSource) {
+        map.addSource(sourceId, {
+          type: "raster",
+          tiles: [tileUrl],
+          tileSize: 256,
+        });
+      }
+      if (!hasLayer) {
+        map.addLayer({
+          id: layerId,
+          type: "raster",
+          source: sourceId,
+          paint: {
+            "raster-opacity": 0.6,
+          },
+        });
+      }
+    } else {
+      if (hasLayer) map.removeLayer(layerId);
+      if (hasSource) map.removeSource(sourceId);
+    }
+  }, [overlay]);
 
   return (
     <div className="relative h-full w-full overflow-hidden rounded-2xl border bg-background shadow-sm">
