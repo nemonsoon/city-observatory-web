@@ -244,29 +244,32 @@ export default function Home() {
                 isLoading={weatherQuery.isLoading}
                 icon={<CloudRain size={16} className="text-muted-foreground" />}
               />
-              {weatherQuery.data?.hourly && weatherRange === "24h" && (
-                <WeatherChart
-                  title="気温の推移"
-                  range="24h"
-                  data={weatherQuery.data.hourly}
-                  dataKey="temperature_2m"
-                  timeZone={weatherQuery.data.timezone}
-                  onRangeChange={setWeatherRange}
-                />
-              )}
-              {weatherQuery.data?.daily && weatherRange === "7d" && (
-                <WeatherChart
-                  title="気温の推移"
-                  range="7d"
-                  data={weatherQuery.data.daily}
-                  dataKey="temperature_2m_max"
-                  timeZone={weatherQuery.data.timezone}
-                  onRangeChange={setWeatherRange}
-                />
-              )}
-              {!weatherQuery.data?.hourly && !weatherQuery.data?.daily && (
-                <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
-              )}
+              {weatherRange === "24h" &&
+                (weatherQuery.data?.hourly ? (
+                  <WeatherChart
+                    title="気温の推移"
+                    range="24h"
+                    data={weatherQuery.data.hourly}
+                    dataKey="temperature_2m"
+                    timeZone={weatherQuery.data.timezone}
+                    onRangeChange={setWeatherRange}
+                  />
+                ) : (
+                  <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
+                ))}
+              {weatherRange === "7d" &&
+                (weatherQuery.data?.daily ? (
+                  <WeatherChart
+                    title="気温の推移"
+                    range="7d"
+                    data={weatherQuery.data.daily}
+                    dataKey="temperature_2m_max"
+                    timeZone={weatherQuery.data.timezone}
+                    onRangeChange={setWeatherRange}
+                  />
+                ) : (
+                  <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
+                ))}
 
               <AirQualityCard
                 pm25={airSnapshot?.pm25 ?? 0}
