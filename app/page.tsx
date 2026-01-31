@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { WeatherCard } from "@/features/weather/ui/weather-card";
 import { WeatherChart } from "@/features/weather/ui/weather-chart";
 import { AirQualityCard } from "@/features/air-quality/ui/aq-card";
@@ -173,6 +174,41 @@ export default function Home() {
                 </span>
               </button>
             ))}
+          </div>
+          <div className="mt-6 hidden rounded-2xl border bg-muted/30 p-4 text-xs text-muted-foreground lg:block">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/cat.jpeg"
+                alt="プロフィール画像"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded-full object-cover"
+              />
+              <div className="text-sm font-semibold text-foreground">
+                nuko-chan
+              </div>
+            </div>
+            <p className="mt-2 leading-relaxed">
+              Webアプリ開発（TypeScript / React / Next.js / Node.js）
+            </p>
+            <div className="mt-3 flex flex-col gap-2">
+              <a
+                className="underline-offset-4 hover:underline"
+                href="https://x.com/nukochan_123"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                X: @nukochan_123
+              </a>
+              <a
+                className="underline-offset-4 hover:underline"
+                href="https://nuko-chan.pages.dev"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Blog: nuko-chan.pages.dev
+              </a>
+            </div>
           </div>
         </aside>
 
