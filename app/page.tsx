@@ -10,6 +10,7 @@ import { MapView } from "@/features/map/ui/map-view";
 import { MapOverlayToggle } from "@/features/map/ui/map-overlay-toggle";
 import { useWeatherData } from "@/features/weather/model/use-weather-data";
 import { useAirQualityData } from "@/features/air-quality/model/use-air-quality-data";
+import { getAirQualitySnapshot } from "@/lib/domain/air-quality-snapshot";
 import type { Location } from "@/lib/types/location";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
@@ -125,16 +126,10 @@ export default function Home() {
     };
   }, [weatherQuery.data]);
 
-  const airSnapshot = useMemo(() => {
-    if (!airQuery.data?.hourly) return undefined;
-    const index = findClosestIndex(airQuery.data.hourly.time);
-    return {
-      pm25: airQuery.data.hourly.pm2_5[index],
-      pm10: airQuery.data.hourly.pm10[index],
-      nitrogenDioxide: airQuery.data.hourly.nitrogen_dioxide[index],
-      ozone: airQuery.data.hourly.ozone[index],
-    };
-  }, [airQuery.data]);
+  const airSnapshot = useMemo(
+    () => getAirQualitySnapshot(airQuery.data?.hourly),
+    [airQuery.data],
+  );
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -276,11 +271,13 @@ export default function Home() {
                 pm10={airSnapshot?.pm10 ?? 0}
                 nitrogenDioxide={airSnapshot?.nitrogenDioxide ?? 0}
                 ozone={airSnapshot?.ozone ?? 0}
-                isLoading={airQuery.isLoading}
+                isLoading={
+                  airQuery.isLoading || airQuery.isFetching || !airSnapshot
+                }
                 icon={<Wind size={16} className="text-muted-foreground" />}
               />
               {airRange === "24h" &&
-                (airQuery.data?.hourly ? (
+                (airQuery.data?.hourly && !airQuery.isFetching ? (
                   <AQChart
                     title="PM2.5 推移"
                     data={airQuery.data.hourly}
@@ -293,7 +290,7 @@ export default function Home() {
                   <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
                 ))}
               {airRange === "5d" &&
-                (airQuery.data?.hourly ? (
+                (airQuery.data?.hourly && !airQuery.isFetching ? (
                   <AQChart
                     title="PM2.5 推移"
                     data={airQuery.data.hourly}
