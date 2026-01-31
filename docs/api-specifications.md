@@ -92,7 +92,7 @@ GET https://geocoding-api.open-meteo.com/v1/search?name={query}&count=10&languag
 ### 1.4 実装例（TypeScript）
 
 ```typescript
-// src/shared/lib/validators/location.ts
+// lib/validators/location.ts
 import { z } from "zod";
 
 // Zodスキーマ
@@ -112,7 +112,7 @@ const GeocodingResponseSchema = z.object({
   generationtime_ms: z.number().optional(),
 });
 
-// src/shared/api/geocoding.ts
+// lib/api/geocoding.ts
 import { APIError } from "./errors";
 import { GeocodingResponseSchema } from "../lib/validators/location";
 
@@ -267,7 +267,7 @@ GET https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&h
 ### 2.4 実装例（TypeScript）
 
 ```typescript
-// src/shared/lib/validators/weather.ts
+// lib/validators/weather.ts
 import { z } from "zod";
 
 // Zodスキーマ
@@ -296,7 +296,7 @@ const WeatherResponseSchema = z.object({
   daily: WeatherDailySchema.optional(),
 });
 
-// src/shared/api/weather.ts
+// lib/api/weather.ts
 import { APIError } from "./errors";
 import { WeatherResponseSchema } from "../lib/validators/weather";
 
@@ -433,7 +433,7 @@ PM2.5 濃度に基づく AQI（Air Quality Index）の一般的な分類:
 ### 3.5 実装例（TypeScript）
 
 ```typescript
-// src/shared/lib/validators/air-quality.ts
+// lib/validators/air-quality.ts
 import { z } from "zod";
 
 // Zodスキーマ
@@ -452,7 +452,7 @@ const AirQualityResponseSchema = z.object({
   hourly: AirQualityHourlySchema,
 });
 
-// src/shared/api/air-quality.ts
+// lib/api/air-quality.ts
 import { APIError } from "./errors";
 import { AirQualityResponseSchema } from "../lib/validators/air-quality";
 
@@ -482,7 +482,7 @@ export async function getAirQualityForecast(
   return AirQualityResponseSchema.parse(data);
 }
 
-// src/shared/lib/domain/aqi-classification.ts
+// lib/domain/aqi-classification.ts
 // トップレベル関数はfunction宣言（coding-guidelines準拠）
 export function classifyAQI(
   pm25: number,
@@ -585,8 +585,8 @@ Free プランの場合、MapTiler ロゴの表示が必須:
 #### 環境変数から取得
 
 ```typescript
-// src/shared/lib/env.ts
-import { env } from "@/src/shared/lib/env";
+// lib/env.ts
+import { env } from "@/lib/env";
 
 const mapStyle = env.NEXT_PUBLIC_MAP_STYLE_LIGHT;
 ```
@@ -594,13 +594,13 @@ const mapStyle = env.NEXT_PUBLIC_MAP_STYLE_LIGHT;
 #### MapLibre 初期化
 
 ```typescript
-// src/features/map/ui/map-view-client.tsx
+// features/map/ui/map-view-client.tsx
 "use client";
 
 import { useEffect, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { env } from "@/src/shared/lib/env";
+import { env } from "@/lib/env";
 
 type MapViewClientProps = {
   center: [number, number];
@@ -665,7 +665,7 @@ export function MapViewClient({ center, zoom }: MapViewClientProps) {
 ### 5.1 共通エラークラス
 
 ```typescript
-// src/shared/api/errors.ts
+// lib/api/errors.ts
 export class APIError extends Error {
   constructor(
     message: string,

@@ -103,172 +103,116 @@
 └────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 レイヤー構成
+### 2.2 構成方針（feature ベース）
 
-#### 2.2.1 プレゼンテーション層（app/）
+#### 2.2.1 app/（ルーティング）
 
 - **責務**: ルーティング、レイアウト、ページコンポーネント
 - **技術**: Next.js App Router、React Server Components
 - **命名規則**: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`
 
-#### 2.2.2 コンポーネント層（components/）
+#### 2.2.2 features/（機能単位）
 
-- **責務**: 再利用可能な UI コンポーネント
+- **責務**: 機能ごとの UI・ロジックを集約
+- **例**: `city-search`, `weather`, `air-quality`, `map`, `compare`
+- **内部構成**:
+  - `ui/`: 機能固有の UI
+  - `model/`: フック・状態・イベント
+  - `lib/`: 機能専用の補助関数（必要な場合のみ）
+- **命名規則**: すべて kebab-case
+- **注意**: Barrel files（`index.ts`）は禁止
+
+#### 2.2.3 components/（再利用 UI）
+
+- **責務**: 汎用 UI とレイアウト
 - **分類**:
-  - `components/ui/`: shadcn/ui コンポーネント（Button, Card 等）
-  - `components/features/`: 機能固有コンポーネント（CitySearch, WeatherCard 等）
-  - `components/map/`: 地図関連コンポーネント（MapView, MapLayer 等）
-  - `components/chart/`: チャート関連コンポーネント
-- **命名規則**: PascalCase（例: `CitySearchInput.tsx`）
+  - `components/ui/`: shadcn/ui コンポーネント
+  - `components/layout/`: Header / Footer 等
+- **命名規則**: すべて kebab-case
 
-#### 2.2.3 データ層（lib/）
+#### 2.2.4 lib/（共有ロジック）
 
 - **責務**: API クライアント、バリデーション、ドメインロジック
 - **分類**:
-  - `lib/api/`: API 呼び出しロジック
-  - `lib/validators/`: Zod スキーマ定義
-  - `lib/domain/`: 派生指標算出などのビジネスロジック
-  - `lib/utils.ts`: 汎用ユーティリティ関数
+  - `lib/api/`
+  - `lib/validators/`
+  - `lib/domain/`
+  - `lib/env.ts`
+  - `lib/utils.ts`
 
-#### 2.2.4 フック層（hooks/）
+#### 2.2.5 hooks/（共有フック）
 
-- **責務**: カスタムフック（状態管理、副作用）
-- **命名規則**: `use` + 機能名（例: `useCitySearch.ts`, `useWeatherData.ts`）
+- **責務**: 複数 feature で使う共通フック（例: `use-debounce`）
+- **命名規則**: すべて kebab-case
 
 ---
 
 ## 3. ディレクトリ構成
 
-**FSD (Feature-Sliced Design) ベースの構成**
+**feature ベースの構成**
 
 ```
 city-observatory/
-├── app/                          # Next.js App Router（ルーティング層）
-│   ├── layout.tsx                # ルートレイアウト（フォント設定）
-│   ├── page.tsx                  # Landingページ
-│   ├── providers.tsx             # グローバルプロバイダー（TanStack Query, Jotai）
-│   ├── globals.css               # グローバルスタイル（Tailwind v4）
+├── app/                          # Next.js App Router
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── providers.tsx
+│   ├── globals.css
 │   ├── dashboard/
-│   │   ├── page.tsx              # City Dashboardページ
-│   │   └── loading.tsx           # ローディング状態
+│   │   ├── page.tsx
+│   │   └── loading.tsx
 │   └── compare/
-│       └── page.tsx              # 都市比較ページ
+│       └── page.tsx
 │
-├── src/                          # アプリケーションコア（FSD構造）
-│   ├── features/                 # 機能（Feature層）
-│   │   ├── city-search/          # 都市検索機能
-│   │   │   ├── ui/
-│   │   │   │   ├── city-search-input.tsx
-│   │   │   │   └── city-suggestions.tsx
-│   │   │   ├── model/
-│   │   │   │   └── use-city-search.ts
-│   │   │   └── index.ts          # 公開API（Barrel禁止、明示的エクスポート）
-│   │   ├── weather/              # 天気表示機能
-│   │   │   ├── ui/
-│   │   │   │   ├── weather-card.tsx
-│   │   │   │   ├── weather-chart.tsx
-│   │   │   │   └── weather-table.tsx
-│   │   │   ├── model/
-│   │   │   │   └── use-weather-data.ts
-│   │   │   └── index.ts
-│   │   ├── air-quality/          # 大気質表示機能
-│   │   │   ├── ui/
-│   │   │   │   ├── aq-card.tsx
-│   │   │   │   └── aq-chart.tsx
-│   │   │   ├── model/
-│   │   │   │   └── use-air-quality-data.ts
-│   │   │   └── index.ts
-│   │   ├── map/                  # 地図表示機能
-│   │   │   ├── ui/
-│   │   │   │   ├── map-view-client.tsx
-│   │   │   │   ├── map-view.tsx
-│   │   │   │   └── map-controls.tsx
-│   │   │   ├── model/
-│   │   │   │   └── use-map-state.ts
-│   │   │   └── index.ts
-│   │   └── compare/              # 都市比較機能
-│   │       ├── ui/
-│   │       │   └── compare-view.tsx
-│   │       └── index.ts
-│   │
-│   ├── entities/                 # エンティティ（ビジネスモデル）
-│   │   ├── location/
-│   │   │   ├── model/
-│   │   │   │   └── types.ts      # Location型定義
-│   │   │   └── index.ts
-│   │   ├── weather/
-│   │   │   ├── model/
-│   │   │   │   └── types.ts      # Weather型定義
-│   │   │   └── index.ts
-│   │   └── air-quality/
-│   │       ├── model/
-│   │       │   └── types.ts      # AirQuality型定義
-│   │       └── index.ts
-│   │
-│   ├── shared/                   # 共有リソース（Shared層）
-│   │   ├── ui/                   # shadcn/uiコンポーネント
-│   │   │   ├── button.tsx
-│   │   │   ├── card.tsx
-│   │   │   ├── input.tsx
-│   │   │   ├── tabs.tsx
-│   │   │   └── ...
-│   │   ├── api/                  # APIクライアント
-│   │   │   ├── geocoding.ts      # Open-Meteo Geocoding
-│   │   │   ├── weather.ts        # Open-Meteo Weather
-│   │   │   ├── air-quality.ts    # Open-Meteo Air Quality
-│   │   │   └── errors.ts         # エラーハンドリング
-│   │   ├── lib/                  # ユーティリティ
-│   │   │   ├── validators/       # Zodスキーマ
-│   │   │   │   ├── location.ts
-│   │   │   │   ├── weather.ts
-│   │   │   │   └── air-quality.ts
-│   │   │   ├── domain/           # ドメインロジック
-│   │   │   │   ├── comfort-score.ts
-│   │   │   │   ├── outdoor-risk.ts
-│   │   │   │   └── best-time-slots.ts
-│   │   │   ├── constants.ts      # 定数定義
-│   │   │   ├── env.ts            # 環境変数
-│   │   │   └── utils.ts          # 汎用ユーティリティ（cn関数等）
-│   │   ├── store/                # グローバル状態（Jotai atoms）
-│   │   │   └── map-state.ts      # 地図状態（必要最小限）
-│   │   └── config/               # 設定
-│   │       └── cities.ts         # おすすめ都市リスト
-│   │
-│   └── widgets/                  # ウィジェット（複合UI）
-│       ├── header.tsx            # ヘッダー
-│       ├── footer.tsx            # フッター
-│       └── error-boundary.tsx    # エラーバウンダリ
+├── features/                     # 機能単位（feature）
+│   ├── city-search/
+│   │   ├── ui/
+│   │   │   ├── city-search-input.tsx
+│   │   │   └── city-suggestions.tsx
+│   │   └── model/
+│   │       └── use-city-search.ts
+│   ├── weather/
+│   │   ├── ui/
+│   │   │   ├── weather-card.tsx
+│   │   │   ├── weather-chart.tsx
+│   │   │   └── weather-table.tsx
+│   │   └── model/
+│   │       └── use-weather-data.ts
+│   ├── air-quality/
+│   │   ├── ui/
+│   │   │   ├── aq-card.tsx
+│   │   │   └── aq-chart.tsx
+│   │   └── model/
+│   │       └── use-air-quality-data.ts
+│   ├── map/
+│   │   └── ui/
+│   │       ├── map-view.tsx
+│   │       ├── map-view-client.tsx
+│   │       └── map-controls.tsx
+│   └── compare/
+│       └── ui/
+│           └── compare-view.tsx
 │
-├── public/                       # 静的ファイル
-│   ├── images/
-│   └── favicon.ico
+├── components/                   # 再利用UI
+│   ├── ui/                       # shadcn/ui
+│   └── layout/                   # header / footer / error-boundary
 │
-├── docs/                         # ドキュメント
-│   ├── requirements.md
-│   ├── technical-specifications.md
-│   ├── development-checklist.md
-│   ├── api-specifications.md
-│   └── coding-guidelines.md
+├── hooks/                        # 共有フック（必要最小限）
+│   └── use-debounce.ts
 │
-├── tests/                        # テスト
-│   ├── unit/
-│   │   └── domain/
-│   │       ├── comfort-score.test.ts
-│   │       └── outdoor-risk.test.ts
-│   └── e2e/
-│       └── dashboard.spec.ts
+├── lib/                          # 共有ロジック
+│   ├── api/
+│   ├── validators/
+│   ├── domain/
+│   ├── types/
+│   ├── store/
+│   ├── env.ts
+│   └── utils.ts
 │
-├── .env.local                    # 環境変数（ローカル、Git管理外）
-├── .env.example                  # 環境変数テンプレート
-├── components.json               # shadcn/ui設定
-├── eslint.config.mjs             # ESLint設定
-├── next.config.ts                # Next.js設定
-├── package.json
-├── pnpm-lock.yaml
-├── postcss.config.mjs
-├── tailwind.config.ts
-├── tsconfig.json
-└── README.md
+├── public/
+├── docs/
+├── tests/
+└── package.json
 ```
 
 **命名規則（coding-guidelines 準拠）**:
@@ -277,7 +221,7 @@ city-observatory/
 - コンポーネントファイル: `component-name.tsx`
 - フックファイル: `use-hook-name.ts`
 - 型定義ファイル: `types.ts`
-- Barrel files（index.ts で全エクスポート）: **禁止** - 必要な export のみを明示的に記述
+- Barrel files（`index.ts`）: **禁止**
 
 ---
 
@@ -386,7 +330,7 @@ export const env = envSchema.parse({
 
 #### 5.2.1 CitySearchInput（Client Component）
 
-**ファイル**: `src/features/city-search/ui/city-search-input.tsx`
+**ファイル**: `features/city-search/ui/city-search-input.tsx`
 
 **責務**: 都市名の入力とサジェスト表示
 
@@ -421,8 +365,8 @@ type CitySearchInputProps = {
 
 #### 5.2.2 MapView（Client Component）
 
-**ファイル**: `src/features/map/ui/map-view.tsx` (dynamic wrapper)
-**ファイル**: `src/features/map/ui/map-view-client.tsx` (実装本体)
+**ファイル**: `features/map/ui/map-view.tsx` (dynamic wrapper)
+**ファイル**: `features/map/ui/map-view-client.tsx` (実装本体)
 
 **責務**: MapLibre GL JS を使った地図表示
 
@@ -441,7 +385,7 @@ type MapViewProps = {
 **重要実装ポイント**:
 
 ```typescript
-// src/features/map/ui/map-view.tsx
+// features/map/ui/map-view.tsx
 // SSR回避（dynamic import）
 import dynamic from "next/dynamic";
 
@@ -471,7 +415,7 @@ const map = new maplibregl.Map({
 
 #### 5.2.3 WeatherChart（Client Component）
 
-**ファイル**: `src/features/weather/ui/weather-chart.tsx`
+**ファイル**: `features/weather/ui/weather-chart.tsx`
 
 **責務**: 時系列天気データのチャート表示
 
@@ -555,7 +499,7 @@ export function WeatherChart({
 
 #### 5.2.4 WeatherCard（Client/Server 両対応）
 
-**ファイル**: `src/features/weather/ui/weather-card.tsx`
+**ファイル**: `features/weather/ui/weather-card.tsx`
 
 **責務**: 現在の天気情報をカード形式で表示
 
@@ -629,7 +573,7 @@ export function Providers({ children }: ProvidersProps) {
 **Jotai Atoms 例** (グローバル状態が必要な場合のみ):
 
 ```typescript
-// src/shared/store/map-state.ts
+// lib/store/map-state.ts
 import { atom } from "jotai";
 
 // 地図のスタイル状態（ライト/ダーク切替が複数コンポーネントで必要な場合）
@@ -644,10 +588,10 @@ export const mapZoomAtom = atom<number>(10);
 #### useCitySearch（都市検索）
 
 ```typescript
-// src/features/city-search/model/use-city-search.ts
+// features/city-search/model/use-city-search.ts
 import { useQuery } from "@tanstack/react-query";
-import { searchCities } from "@/src/shared/api/geocoding";
-import { useDebounce } from "@/src/shared/lib/hooks/use-debounce";
+import { searchCities } from "@/lib/api/geocoding";
+import { useDebounce } from "@/hooks/use-debounce";
 
 // トップレベル関数はfunction宣言
 export function useCitySearch(query: string) {
@@ -665,10 +609,10 @@ export function useCitySearch(query: string) {
 #### useWeatherData（天気データ取得）
 
 ```typescript
-// src/features/weather/model/use-weather-data.ts
+// features/weather/model/use-weather-data.ts
 import { useQuery } from "@tanstack/react-query";
-import { getWeatherForecast } from "@/src/shared/api/weather";
-import type { Location } from "@/src/entities/location";
+import { getWeatherForecast } from "@/lib/api/weather";
+import type { Location } from "@/lib/types/location";
 
 // undefinedを優先（coding-guidelines準拠）
 export function useWeatherData(
@@ -697,7 +641,7 @@ export function useWeatherData(
 #### API エラーのカスタムクラス
 
 ```typescript
-// src/shared/api/errors.ts
+// lib/api/errors.ts
 export class APIError extends Error {
   constructor(
     message: string,
@@ -724,11 +668,11 @@ export function handleAPIError(error: unknown): APIError {
 #### エラーバウンダリ
 
 ```typescript
-// src/widgets/error-boundary.tsx
+// components/layout/error-boundary.tsx
 "use client";
 
 import { Component, type ReactNode } from "react";
-import { Button } from "@/src/shared/ui/button";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   children: ReactNode;
@@ -854,14 +798,14 @@ xl: '1280px'  // デスクトップ
 // 地図コンポーネント
 import dynamic from "next/dynamic";
 
-export const MapView = dynamic(() => import("./MapViewClient"), {
+export const MapView = dynamic(() => import("./map-view-client"), {
   ssr: false,
   loading: () => <MapSkeleton />,
 });
 
 // チャートコンポーネント
 export const WeatherChart = dynamic(
-  () => import("./WeatherChart").then((mod) => mod.WeatherChart),
+  () => import("./weather-chart").then((mod) => mod.WeatherChart),
   {
     ssr: false,
     loading: () => <ChartSkeleton />,

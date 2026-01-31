@@ -86,7 +86,7 @@
 - [ ] **F4-2**: PM10 濃度の表示
 - [ ] **F4-3**: その他大気汚染物質の表示（NO2, O3 等）
 - [ ] **F4-4**: AQ 指数の可視化（カラーコード・グラデーション）
-- [ ] **F4-5**: 24 時間/7 日間の AQ 予報チャート
+- [ ] **F4-5**: 24 時間/5 日間の AQ 予報チャート
 
 #### F5. 都市比較機能
 
@@ -131,7 +131,7 @@
 
 ## 4. 非機能要件
 
-### 4.1 パフォーマンス要件
+### 4.1 パフォーマンス要件（目安）
 
 - [ ] **NFR-P1**: First Contentful Paint (FCP) < 1.5 秒
 - [ ] **NFR-P2**: Largest Contentful Paint (LCP) < 2.5 秒
@@ -172,7 +172,7 @@
 
 - [ ] **NFR-Q1**: TypeScript 厳格モード（strict: true）
 - [ ] **NFR-Q2**: ESLint/Prettier によるコード品質管理
-- [ ] **NFR-Q3**: ユニットテスト（派生指標・ドメイン関数）
+- [ ] **NFR-Q3**: ユニットテスト（派生指標・ドメイン関数の最小限）
 - [ ] **NFR-Q4**: E2E テスト（最低 1 本: 都市検索 → ダッシュボード表示）
 - [ ] **NFR-Q5**: Zod による実行時型バリデーション
 
@@ -250,7 +250,7 @@
 
 ```typescript
 type Location = {
-  id: string; // 一意識別子
+  id: number; // 一意識別子（Open-MeteoのGeoNames ID）
   name: string; // 都市名（例: "Tokyo"）
   country: string; // 国名（例: "Japan"）
   lat: number; // 緯度
