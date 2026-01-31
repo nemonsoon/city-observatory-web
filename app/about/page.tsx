@@ -7,15 +7,58 @@ import { ExternalLink } from "lucide-react";
 export default function AboutPage() {
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* 背景グラデーション */}
+      {/* ノイズテクスチャ付きメッシュグラデーション */}
       <div className="fixed inset-0 -z-10">
+        {/* SVGノイズフィルター（強化版） */}
+        <svg className="absolute h-0 w-0">
+          <filter id="noise-about">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.9"
+              numOctaves="5"
+              stitchTiles="stitch"
+            />
+            <feColorMatrix type="saturate" values="0" />
+          </filter>
+        </svg>
+
+        {/* Atmospheric Twilight: 大気の黄昏時の層を表現 */}
+        <div
+          className="absolute inset-0 opacity-55"
+          style={{
+            background: `
+              radial-gradient(circle at 15% 20%, hsl(230, 35%, 15%) 0%, transparent 45%),
+              radial-gradient(ellipse at 80% 50%, hsl(260, 20%, 18%) 0%, transparent 50%),
+              radial-gradient(circle at 40% 85%, hsl(15, 45%, 22%) 0%, transparent 55%)
+            `,
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-35"
+          style={{
+            background: `
+              radial-gradient(circle at 60% 30%, hsl(25, 15%, 12%) 0%, transparent 42%),
+              radial-gradient(ellipse at 20% 70%, hsl(230, 30%, 18%) 0%, transparent 48%)
+            `,
+          }}
+        />
+
+        {/* ノイズテクスチャオーバーレイ（強化） */}
+        <div
+          className="absolute inset-0 opacity-[0.35] mix-blend-soft-light"
+          style={{ filter: "url(#noise-about)" }}
+        />
+
+        {/* ビネット効果（周辺を暗く） */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse at 50% 30%, hsl(200, 80%, 45%) 0%, hsl(200, 60%, 25%) 30%, transparent 65%)",
+              "radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%)",
           }}
         />
+
+        {/* ベース背景 */}
         <div className="absolute inset-0 -z-10 bg-background" />
       </div>
 

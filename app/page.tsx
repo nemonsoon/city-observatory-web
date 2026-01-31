@@ -47,14 +47,58 @@ export default function Home() {
   const bgColor = temperatureToColor(weatherView?.snapshot.temperature ?? 20);
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* データドリブンな背景グラデーション */}
+      {/* ノイズテクスチャ付きメッシュグラデーション */}
       <div className="fixed inset-0 -z-10">
+        {/* SVGノイズフィルター（強化版） */}
+        <svg className="absolute h-0 w-0">
+          <filter id="noise">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.9"
+              numOctaves="5"
+              stitchTiles="stitch"
+            />
+            <feColorMatrix type="saturate" values="0" />
+          </filter>
+        </svg>
+
+        {/* 複数のグラデーションレイヤー（彩度を抑えて高級感） */}
         <div
-          className="absolute inset-0 transition-all duration-1000"
+          className="absolute inset-0 opacity-50 transition-all duration-1000"
           style={{
-            background: `radial-gradient(ellipse at 50% 30%, hsl(${bgColor}, 45%) 0%, hsl(${bgColor}, 25%) 30%, transparent 65%)`,
+            background: `
+              radial-gradient(circle at 20% 20%, hsl(${bgColor}, 28%) 0%, transparent 50%),
+              radial-gradient(circle at 80% 60%, hsl(${bgColor}, 22%) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 80%, hsl(${bgColor}, 18%) 0%, transparent 60%)
+            `,
           }}
         />
+        <div
+          className="absolute inset-0 opacity-30 transition-all duration-1000"
+          style={{
+            background: `
+              radial-gradient(circle at 60% 40%, hsl(${(parseInt(bgColor.split(" ")[0]) + 30) % 360} ${bgColor.split(" ")[1]} ${bgColor.split(" ")[2]}, 20%) 0%, transparent 45%),
+              radial-gradient(circle at 30% 70%, hsl(${(parseInt(bgColor.split(" ")[0]) - 20) % 360} ${bgColor.split(" ")[1]} ${bgColor.split(" ")[2]}, 16%) 0%, transparent 50%)
+            `,
+          }}
+        />
+
+        {/* ノイズテクスチャオーバーレイ（強化） */}
+        <div
+          className="absolute inset-0 opacity-[0.35] mix-blend-soft-light"
+          style={{ filter: "url(#noise)" }}
+        />
+
+        {/* ビネット効果（周辺を暗く） */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%)",
+          }}
+        />
+
+        {/* ベース背景 */}
         <div className="absolute inset-0 -z-10 bg-background" />
       </div>
 
