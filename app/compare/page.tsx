@@ -8,9 +8,11 @@ import { AQChart } from "@/features/air-quality/ui/aq-chart";
 import { MapView } from "@/features/map/ui/map-view";
 import { useWeatherData } from "@/features/weather/model/use-weather-data";
 import { WeatherIcon } from "@/features/weather/ui/weather-icon";
+import { UVCard } from "@/features/weather/ui/uv-card";
 import { useAirQualityData } from "@/features/air-quality/model/use-air-quality-data";
 import { getAirQualitySeries } from "@/lib/domain/air-quality-series";
 import { getWeatherClassification } from "@/lib/domain/weather-classification";
+import { getUVClassification } from "@/lib/domain/uv-classification";
 import type { Location } from "@/lib/types/location";
 import { cn } from "@/lib/utils";
 
@@ -138,6 +140,7 @@ export default function ComparePage() {
       humidity: leftWeather.data.hourly.relative_humidity_2m[index],
       windSpeed: leftWeather.data.hourly.wind_speed_10m[index],
       weathercode: leftWeather.data.hourly.weathercode[index],
+      uvIndex: leftWeather.data.hourly.uv_index[index],
       precipitationProbability:
         leftWeather.data.hourly.precipitation_probability[index],
     };
@@ -152,6 +155,7 @@ export default function ComparePage() {
       humidity: rightWeather.data.hourly.relative_humidity_2m[index],
       windSpeed: rightWeather.data.hourly.wind_speed_10m[index],
       weathercode: rightWeather.data.hourly.weathercode[index],
+      uvIndex: rightWeather.data.hourly.uv_index[index],
       precipitationProbability:
         rightWeather.data.hourly.precipitation_probability[index],
     };
@@ -163,6 +167,14 @@ export default function ComparePage() {
   const rightWeatherClassification = rightSnapshot
     ? getWeatherClassification(rightSnapshot.weathercode)
     : undefined;
+  const leftUvClassification = leftSnapshot
+    ? getUVClassification(leftSnapshot.uvIndex)
+    : undefined;
+  const rightUvClassification = rightSnapshot
+    ? getUVClassification(rightSnapshot.uvIndex)
+    : undefined;
+  const leftUvIndexMax = leftWeather.data?.daily?.uv_index_max?.[0];
+  const rightUvIndexMax = rightWeather.data?.daily?.uv_index_max?.[0];
 
   // 背景色をデータから生成
   const leftBgColor = temperatureToColor(leftSnapshot?.temperature ?? 20);
@@ -340,6 +352,17 @@ export default function ComparePage() {
               />
             </div>
 
+            {/* UV指数 */}
+            <div className="group rounded-3xl border border-foreground/10 bg-background/50 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-foreground/20 hover:bg-background/60 hover:shadow-2xl hover:-translate-y-1">
+              <UVCard
+                uvIndex={leftSnapshot?.uvIndex ?? 0}
+                uvIndexMax={leftUvIndexMax}
+                label={leftUvClassification?.label ?? "不明"}
+                color={leftUvClassification?.color ?? "hsl(0, 0%, 60%)"}
+                isLoading={leftWeather.isLoading}
+              />
+            </div>
+
             {/* 気温の推移 */}
             {leftWeather.data?.hourly ? (
               <div className="group rounded-3xl border border-foreground/10 bg-background/50 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-foreground/20 hover:bg-background/60 hover:shadow-2xl hover:-translate-y-1">
@@ -402,6 +425,17 @@ export default function ComparePage() {
                   ) : undefined
                 }
                 conditionLabel={rightWeatherClassification?.label}
+                isLoading={rightWeather.isLoading}
+              />
+            </div>
+
+            {/* UV指数 */}
+            <div className="group rounded-3xl border border-foreground/10 bg-background/50 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-foreground/20 hover:bg-background/60 hover:shadow-2xl hover:-translate-y-1">
+              <UVCard
+                uvIndex={rightSnapshot?.uvIndex ?? 0}
+                uvIndexMax={rightUvIndexMax}
+                label={rightUvClassification?.label ?? "不明"}
+                color={rightUvClassification?.color ?? "hsl(0, 0%, 60%)"}
                 isLoading={rightWeather.isLoading}
               />
             </div>

@@ -9,9 +9,11 @@ import { MapView } from "@/features/map/ui/map-view";
 import { MapOverlayToggle } from "@/features/map/ui/map-overlay-toggle";
 import { useWeatherData } from "@/features/weather/model/use-weather-data";
 import { WeatherIcon } from "@/features/weather/ui/weather-icon";
+import { UVCard } from "@/features/weather/ui/uv-card";
 import { useAirQualityData } from "@/features/air-quality/model/use-air-quality-data";
 import { getAirQualitySeries } from "@/lib/domain/air-quality-series";
 import { getWeatherClassification } from "@/lib/domain/weather-classification";
+import { getUVClassification } from "@/lib/domain/uv-classification";
 import type { Location } from "@/lib/types/location";
 import { cn } from "@/lib/utils";
 
@@ -129,6 +131,7 @@ export default function Home() {
       humidity: weatherQuery.data.hourly.relative_humidity_2m[index],
       windSpeed: weatherQuery.data.hourly.wind_speed_10m[index],
       weathercode: weatherQuery.data.hourly.weathercode[index],
+      uvIndex: weatherQuery.data.hourly.uv_index[index],
       precipitationProbability:
         weatherQuery.data.hourly.precipitation_probability[index],
     };
@@ -142,6 +145,10 @@ export default function Home() {
   const weatherClassification = weatherSnapshot
     ? getWeatherClassification(weatherSnapshot.weathercode)
     : undefined;
+  const uvClassification = weatherSnapshot
+    ? getUVClassification(weatherSnapshot.uvIndex)
+    : undefined;
+  const uvIndexMax = weatherQuery.data?.daily?.uv_index_max?.[0];
 
   // 背景色をデータから生成
   const bgColor = temperatureToColor(weatherSnapshot?.temperature ?? 20);
@@ -238,6 +245,17 @@ export default function Home() {
                   ) : undefined
                 }
                 conditionLabel={weatherClassification?.label}
+                isLoading={weatherQuery.isLoading}
+              />
+            </div>
+
+            {/* UV指数 */}
+            <div className="group rounded-3xl border border-foreground/10 bg-background/50 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-foreground/20 hover:bg-background/60 hover:shadow-2xl hover:-translate-y-1">
+              <UVCard
+                uvIndex={weatherSnapshot?.uvIndex ?? 0}
+                uvIndexMax={uvIndexMax}
+                label={uvClassification?.label ?? "不明"}
+                color={uvClassification?.color ?? "hsl(0, 0%, 60%)"}
                 isLoading={weatherQuery.isLoading}
               />
             </div>
