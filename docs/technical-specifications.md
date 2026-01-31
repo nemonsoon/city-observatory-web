@@ -23,12 +23,12 @@
 
 ### 1.3 データ取得・状態管理
 
-| 技術                         | 用途                                   |
-| ---------------------------- | -------------------------------------- |
-| TanStack Query (React Query) | サーバー状態管理、キャッシュ、リトライ |
-| Jotai                        | グローバル状態管理（最小限の使用）     |
-| Zod                          | スキーマバリデーション、型推論         |
-| Nuqs (next-use-query-state)  | URL 同期状態管理                       |
+| 技術                         | 用途                                      |
+| ---------------------------- | ----------------------------------------- |
+| TanStack Query (React Query) | サーバー状態管理、キャッシュ、リトライ    |
+| Jotai                        | グローバル状態管理（将来検討/現状未使用） |
+| Zod                          | スキーマバリデーション、型推論            |
+| Nuqs (next-use-query-state)  | URL 同期状態管理（将来検討/現状未使用）   |
 
 **状態管理の方針**:
 
@@ -74,9 +74,9 @@
 │  Next.js App Router (React 19 + TypeScript)             │
 │  ┌───────────────┐  ┌──────────────┐  ┌──────────────┐ │
 │  │  Pages/Routes │  │  Components  │  │   Hooks      │ │
-│  │  - Landing    │  │  - UI (shad) │  │  - useQuery  │ │
-│  │  - Dashboard  │  │  - Map       │  │  - useSearch │ │
-│  │  - Compare    │  │  - Chart     │  │  - useCity   │ │
+│  │  - Dashboard  │  │  - UI (shad) │  │  - useQuery  │ │
+│  │               │  │  - Map       │  │  - useWeather│ │
+│  │               │  │  - Chart     │  │  - useAir    │ │
 │  └───────┬───────┘  └──────┬───────┘  └──────┬───────┘ │
 │          │                 │                  │         │
 │          └─────────────────┴──────────────────┘         │
@@ -92,16 +92,18 @@
              │                  │               │
              ▼                  ▼               ▼
 ┌────────────────────────────────────────────────────────┐
-│              External APIs (Open-Meteo, MapTiler)      │
+│      External APIs (Open-Meteo / OpenWeather / MapTiler)│
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐ │
-│  │  Geocoding   │  │   Weather    │  │  Air Quality │ │
-│  │     API      │  │   Forecast   │  │     API      │ │
+│  │   Weather    │  │  Air Quality │  │ OpenWeather  │ │
+│  │   Forecast   │  │     API      │  │   Tiles      │ │
 │  └──────────────┘  └──────────────┘  └──────────────┘ │
 │  ┌──────────────────────────────────────────────────┐  │
 │  │         MapTiler Vector Tiles (地図タイル)       │  │
 │  └──────────────────────────────────────────────────┘  │
 └────────────────────────────────────────────────────────┘
 ```
+
+**注記**: 現状の MVP は Dashboard のみ実装済み。Landing/Compare/都市検索は将来拡張として記載している。
 
 ### 2.2 構成方針（feature ベース）
 
@@ -114,7 +116,7 @@
 #### 2.2.2 features/（機能単位）
 
 - **責務**: 機能ごとの UI・ロジックを集約
-- **例**: `city-search`, `weather`, `air-quality`, `map`, `compare`
+- **例**: `weather`, `air-quality`, `map`
 - **内部構成**:
   - `ui/`: 機能固有の UI
   - `model/`: フック・状態・イベント
@@ -399,7 +401,7 @@ export const env = envSchema.parse({
 
 ### 5.2 主要コンポーネント仕様
 
-#### 5.2.1 CitySearchInput（Client Component）
+#### 5.2.1 CitySearchInput（Client Component / 将来）
 
 **ファイル**: `features/city-search/ui/city-search-input.tsx`
 
@@ -447,9 +449,8 @@ type CitySearchInputProps = {
 type MapViewProps = {
   center: [number, number]; // [lng, lat]
   zoom?: number;
-  style?: 'light' | 'dark';
-  markers?: Array<{ lng: number; lat: number; label: string }>;
-  onMapClick?: (lng: number; lat: number) => void;
+  markers?: Array<{ lng: number; lat: number; label?: string }>;
+  overlay?: "none" | "precipitation";
 };
 ```
 
@@ -656,7 +657,7 @@ export const mapZoomAtom = atom<number>(10);
 
 ### 6.2 カスタムフック設計
 
-#### useCitySearch（都市検索）
+#### useCitySearch（都市検索 / 将来）
 
 ```typescript
 // features/city-search/model/use-city-search.ts
