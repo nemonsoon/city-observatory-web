@@ -14,9 +14,9 @@ const riskLabels: Record<ComfortSummaryCardProps["outdoorRiskLevel"], string> =
 
 const riskColors: Record<ComfortSummaryCardProps["outdoorRiskLevel"], string> =
   {
-    low: "bg-emerald-400/70",
-    medium: "bg-amber-400/80",
-    high: "bg-rose-400/80",
+    low: "bg-foreground/30",
+    medium: "bg-foreground/50",
+    high: "bg-foreground/70",
   };
 
 export function ComfortSummaryCard({

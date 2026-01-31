@@ -225,14 +225,12 @@ export default function Home() {
             </div>
 
             {/* 快適度サマリー */}
-            <div className="group rounded-3xl border border-foreground/10 bg-background/50 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-foreground/20 hover:bg-background/60 hover:shadow-2xl hover:-translate-y-1">
-              <ComfortSummaryCard
-                comfortScore={comfortScore}
-                outdoorRiskLevel={outdoorRiskLevel}
-                pm25={airSnapshot?.pm25 ?? 0}
-                isLoading={weatherQuery.isLoading || airQuery.isLoading}
-              />
-            </div>
+            <ComfortSummaryCard
+              comfortScore={comfortScore}
+              outdoorRiskLevel={outdoorRiskLevel}
+              pm25={airSnapshot?.pm25 ?? 0}
+              isLoading={weatherQuery.isLoading || airQuery.isLoading}
+            />
 
             {/* 風向き・風速 */}
             <div className="group rounded-3xl border border-foreground/10 bg-background/50 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-foreground/20 hover:bg-background/60 hover:shadow-2xl hover:-translate-y-1">
