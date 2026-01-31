@@ -288,7 +288,7 @@ export default function Home() {
                     data={airSeries}
                     dataKey="pm2_5"
                     range="24h"
-                    timeZone={airQuery.data.timezone}
+                    timeZone={airQuery.data?.timezone ?? activeCity.timezone}
                     onRangeChange={setAirRange}
                   />
                 ) : (
@@ -301,7 +301,7 @@ export default function Home() {
                     data={airSeries}
                     dataKey="pm2_5"
                     range="5d"
-                    timeZone={airQuery.data.timezone}
+                    timeZone={airQuery.data?.timezone ?? activeCity.timezone}
                     onRangeChange={setAirRange}
                   />
                 ) : (
