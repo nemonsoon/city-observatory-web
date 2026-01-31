@@ -11,6 +11,7 @@ import { useWeatherData } from "@/features/weather/model/use-weather-data";
 import { WeatherIcon } from "@/features/weather/ui/weather-icon";
 import { UVCard } from "@/features/weather/ui/uv-card";
 import { WindCard } from "@/features/weather/ui/wind-card";
+import { SunPathCard } from "@/features/weather/ui/sun-path-card";
 import { useAirQualityData } from "@/features/air-quality/model/use-air-quality-data";
 import { getAirQualitySeries } from "@/lib/domain/air-quality-series";
 import { getWeatherClassification } from "@/lib/domain/weather-classification";
@@ -19,6 +20,12 @@ import {
   getWindDirectionLabel,
   getWindDirectionRotation,
 } from "@/lib/domain/wind-direction";
+import {
+  getSunPhase,
+  getSunPhaseBackground,
+  getSunPhaseLabel,
+  getSunProgress,
+} from "@/lib/domain/sun-path";
 import type { Location } from "@/lib/types/location";
 import { cn } from "@/lib/utils";
 
@@ -161,6 +168,18 @@ export default function Home() {
   const windDirectionRotation = weatherSnapshot
     ? getWindDirectionRotation(weatherSnapshot.windDirection)
     : 0;
+  const sunriseAt = weatherQuery.data?.daily?.sunrise?.[0];
+  const sunsetAt = weatherQuery.data?.daily?.sunset?.[0];
+  const sunPhase =
+    sunriseAt && sunsetAt
+      ? getSunPhase(new Date(), new Date(sunriseAt), new Date(sunsetAt))
+      : "night";
+  const sunProgress =
+    sunriseAt && sunsetAt
+      ? getSunProgress(new Date(), new Date(sunriseAt), new Date(sunsetAt))
+      : 0;
+  const sunPhaseLabel = getSunPhaseLabel(sunPhase);
+  const sunPhaseBackground = getSunPhaseBackground(sunPhase);
 
   // 背景色をデータから生成
   const bgColor = temperatureToColor(weatherSnapshot?.temperature ?? 20);
@@ -281,6 +300,27 @@ export default function Home() {
                 isLoading={weatherQuery.isLoading}
               />
             </div>
+
+            {/* 日の出/日の入り */}
+            {sunriseAt && sunsetAt ? (
+              <div className="group rounded-3xl border border-foreground/10 bg-background/50 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-foreground/20 hover:bg-background/60 hover:shadow-2xl hover:-translate-y-1">
+                <SunPathCard
+                  sunrise={new Date(sunriseAt).toLocaleTimeString("ja-JP", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  sunset={new Date(sunsetAt).toLocaleTimeString("ja-JP", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  nowLabel={formatLocalTime(activeCity.timezone)}
+                  phaseLabel={sunPhaseLabel}
+                  progress={sunProgress}
+                  background={sunPhaseBackground}
+                  isLoading={weatherQuery.isLoading}
+                />
+              </div>
+            ) : null}
 
             {/* 気温の推移 */}
             {weatherQuery.data?.hourly ? (
