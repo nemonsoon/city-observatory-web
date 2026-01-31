@@ -1,6 +1,6 @@
 # City Observatory
 
-都市の"いま"を観測するダッシュボード。日本地図上で天気・大気質・体感指数などを可視化し、複数都市の比較を可能にするフロントエンド専用アプリです。
+都市の"いま"を観測するダッシュボード。日本の主要 6 都市の天気・大気質を 1 画面で可視化するフロントエンド専用アプリです。
 
 ## 目的
 
@@ -10,41 +10,36 @@
 
 ```mermaid
 flowchart LR
-  A[都市検索] --> B[都市ダッシュボード]
+  A[都市選択] --> B[ダッシュボード]
   B --> C[地図表示]
   B --> D[気象データ]
   B --> E[大気質データ]
-  B --> F[比較モード]
-  F --> B
 ```
 
 ## 主要機能
 
-- 都市検索と候補サジェスト
-- 地図のズーム・パン・レイヤー切替
+- 6 都市（東京/大阪/名古屋/札幌/福岡/那覇）の切り替え
+- 地図のズーム・パン・降水レイヤー切替
 - 現在値と 24h/7d（AQ は 24h/5d）の時系列表示
-- 体感指数や快適度スコアの算出
-- 2 都市の横並び比較
+- ダークモード切替
 
 ## 画面構成
 
 ```mermaid
 flowchart TB
-  L[Landing] --> D[City Dashboard]
-  D --> M[Map View]
+  D[Dashboard] --> M[Map View]
   D --> P[Data Panels]
-  D --> C[Compare Mode]
 ```
 
 ## アーキテクチャ概要
 
 ```mermaid
 flowchart TB
-  UI[Next.js App Router] --> S[State: useState / jotai]
+  UI[Next.js App Router] --> S[State: useState]
   UI --> V[View Components]
-  V --> C[Charts]
-  V --> M[Map]
-  UI --> A[External APIs]
+  V --> C[Recharts]
+  V --> M[MapLibre + MapTiler]
+  UI --> A[Open-Meteo / OpenWeather]
 ```
 
 ## ドキュメント
@@ -69,4 +64,17 @@ pnpm dev
 pnpm build
 pnpm start
 pnpm lint
+```
+
+## 環境変数
+
+`.env.local` / `.env.production` に設定（キーはGitにコミットしない）
+
+```bash
+NEXT_PUBLIC_MAPTILER_KEY=
+NEXT_PUBLIC_OPENWEATHER_KEY=
+NEXT_PUBLIC_MAP_STYLE_LIGHT=https://api.maptiler.com/maps/streets-v2/style.json
+NEXT_PUBLIC_MAP_STYLE_DARK=https://api.maptiler.com/maps/streets-v2-dark/style.json
+NEXT_PUBLIC_DEFAULT_CITY=tokyo
+NEXT_PUBLIC_FEATURE_MAP=true
 ```
