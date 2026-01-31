@@ -1,14 +1,21 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { CitySearchInput } from "@/features/city-search/ui/city-search-input";
+import { useMemo, useState } from "react";
+import { WeatherCard } from "@/features/weather/ui/weather-card";
+import { WeatherChart } from "@/features/weather/ui/weather-chart";
+import { AirQualityCard } from "@/features/air-quality/ui/aq-card";
+import { AQChart } from "@/features/air-quality/ui/aq-chart";
+import { MapView } from "@/features/map/ui/map-view";
+import { useWeatherData } from "@/features/weather/model/use-weather-data";
+import { useAirQualityData } from "@/features/air-quality/model/use-air-quality-data";
 import type { Location } from "@/lib/types/location";
+import { cn } from "@/lib/utils";
 
-const recommendedCities: Location[] = [
+const cities: Array<Location & { label: string }> = [
   {
     id: 1850144,
     name: "Tokyo",
+    label: "東京",
     country: "Japan",
     lat: 35.6895,
     lon: 139.6917,
@@ -17,140 +24,230 @@ const recommendedCities: Location[] = [
   {
     id: 1853909,
     name: "Osaka",
+    label: "大阪",
     country: "Japan",
     lat: 34.6937,
     lon: 135.5023,
     timezone: "Asia/Tokyo",
   },
   {
+    id: 1856057,
+    name: "Nagoya",
+    label: "名古屋",
+    country: "Japan",
+    lat: 35.1815,
+    lon: 136.9066,
+    timezone: "Asia/Tokyo",
+  },
+  {
     id: 2128295,
     name: "Sapporo",
+    label: "札幌",
     country: "Japan",
     lat: 43.0618,
     lon: 141.3545,
     timezone: "Asia/Tokyo",
   },
   {
-    id: 1856057,
-    name: "Nagoya",
+    id: 1863967,
+    name: "Fukuoka",
+    label: "福岡",
     country: "Japan",
-    lat: 35.1815,
-    lon: 136.9066,
+    lat: 33.5904,
+    lon: 130.4017,
+    timezone: "Asia/Tokyo",
+  },
+  {
+    id: 1856035,
+    name: "Naha",
+    label: "那覇",
+    country: "Japan",
+    lat: 26.2124,
+    lon: 127.6809,
     timezone: "Asia/Tokyo",
   },
 ];
 
-export default function Home() {
-  const router = useRouter();
+function findClosestIndex(times: string[]) {
+  const now = Date.now();
+  let bestIndex = 0;
+  let bestDiff = Number.POSITIVE_INFINITY;
 
-  const handleCitySelect = (city: Location) => {
-    router.push("/dashboard");
-  };
+  times.forEach((time, index) => {
+    const value = new Date(time).getTime();
+    const diff = Math.abs(value - now);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      bestIndex = index;
+    }
+  });
+
+  return bestIndex;
+}
+
+function formatLocalTime(timeZone: string) {
+  return new Intl.DateTimeFormat("ja-JP", {
+    timeZone,
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date());
+}
+
+export default function Home() {
+  const [selectedCityId, setSelectedCityId] = useState<number>(cities[0].id);
+  const [weatherRange, setWeatherRange] = useState<"24h" | "7d">("24h");
+  const [airRange, setAirRange] = useState<"24h" | "5d">("24h");
+
+  const activeCity =
+    cities.find((city) => city.id === selectedCityId) ?? cities[0];
+
+  const weatherQuery = useWeatherData(activeCity, weatherRange);
+  const airQuery = useAirQualityData(activeCity, airRange);
+
+  const weatherSnapshot = useMemo(() => {
+    if (!weatherQuery.data?.hourly) return undefined;
+    const index = findClosestIndex(weatherQuery.data.hourly.time);
+    return {
+      temperature: weatherQuery.data.hourly.temperature_2m[index],
+      apparentTemperature: weatherQuery.data.hourly.apparent_temperature[index],
+      humidity: weatherQuery.data.hourly.relative_humidity_2m[index],
+      windSpeed: weatherQuery.data.hourly.wind_speed_10m[index],
+      precipitationProbability:
+        weatherQuery.data.hourly.precipitation_probability[index],
+    };
+  }, [weatherQuery.data]);
+
+  const airSnapshot = useMemo(() => {
+    if (!airQuery.data?.hourly) return undefined;
+    const index = findClosestIndex(airQuery.data.hourly.time);
+    return {
+      pm25: airQuery.data.hourly.pm2_5[index],
+      pm10: airQuery.data.hourly.pm10[index],
+      nitrogenDioxide: airQuery.data.hourly.nitrogen_dioxide[index],
+      ozone: airQuery.data.hourly.ozone[index],
+    };
+  }, [airQuery.data]);
 
   return (
-    <div className="min-h-screen bg-muted/20">
-      <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-6">
-        <div className="text-sm font-semibold uppercase tracking-[0.35em] text-muted-foreground">
-          City Observatory
-        </div>
-        <Link
-          href="/dashboard"
-          className="rounded-full border px-4 py-2 text-xs font-medium text-muted-foreground transition hover:border-foreground hover:text-foreground"
-        >
-          ダッシュボードへ
-        </Link>
-      </header>
-
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 pb-16 pt-4">
-        <section className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-          <div className="space-y-6">
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
-              都市の今を観測する
-            </p>
-            <h1 className="text-4xl font-semibold leading-tight text-foreground md:text-5xl">
-              今日の都市コンディションを
-              <br />
-              ひと目で把握するダッシュボード
-            </h1>
-            <p className="max-w-lg text-base text-muted-foreground">
-              天気・大気質・地図をまとめてチェック。気になる都市を検索して、
-              すぐにダッシュボードへ移動できます。
-            </p>
-            <CitySearchInput onCitySelect={handleCitySelect} />
+    <div className="min-h-screen bg-muted/30">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 lg:flex-row lg:gap-8 lg:px-8 lg:py-8">
+        <aside className="w-full rounded-3xl border bg-background p-4 shadow-sm lg:w-64 lg:shrink-0 lg:p-6">
+          <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+            City Observatory
           </div>
+          <div className="mt-6 space-y-2">
+            {cities.map((city) => (
+              <button
+                key={city.id}
+                type="button"
+                onClick={() => setSelectedCityId(city.id)}
+                className={cn(
+                  "flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm transition",
+                  selectedCityId === city.id
+                    ? "border-primary bg-primary/10 text-foreground"
+                    : "border-transparent hover:border-foreground/30",
+                )}
+              >
+                <span className="font-medium">{city.label}</span>
+                <span className="text-xs text-muted-foreground">
+                  {city.name}
+                </span>
+              </button>
+            ))}
+          </div>
+        </aside>
 
-          <div className="rounded-3xl border bg-background p-6 shadow-sm">
-            <h2 className="text-sm font-medium text-muted-foreground">
-              おすすめ都市
-            </h2>
-            <div className="mt-4 grid gap-3">
-              {recommendedCities.map((city) => (
-                <button
-                  key={city.id}
-                  type="button"
-                  onClick={() => handleCitySelect(city)}
-                  className="flex items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm transition hover:border-foreground"
-                >
-                  <div>
-                    <div className="font-medium text-foreground">
-                      {city.name}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {city.country}
-                    </div>
-                  </div>
-                  <span className="text-xs text-muted-foreground">→</span>
-                </button>
-              ))}
+        <main className="flex-1 space-y-6">
+          <header className="rounded-3xl border bg-background p-6 shadow-sm">
+            <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+              Dashboard
             </div>
-          </div>
-        </section>
+            <div className="mt-3 flex flex-wrap items-baseline gap-3">
+              <h1 className="text-3xl font-semibold text-foreground">
+                {activeCity.label}
+              </h1>
+              <span className="text-sm text-muted-foreground">
+                {activeCity.country}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {formatLocalTime(activeCity.timezone)}（現地時刻）
+              </span>
+            </div>
+          </header>
 
-        <section className="grid gap-4 rounded-3xl border bg-background p-6 text-sm text-muted-foreground md:grid-cols-3">
-          <div>
-            <div className="text-base font-medium text-foreground">天気</div>
-            <p className="mt-2">現在値と 24h/7d の流れを確認。</p>
-          </div>
-          <div>
-            <div className="text-base font-medium text-foreground">大気質</div>
-            <p className="mt-2">PM2.5 を中心に簡易ラベルで把握。</p>
-          </div>
-          <div>
-            <div className="text-base font-medium text-foreground">地図</div>
-            <p className="mt-2">選択都市を地図上で可視化。</p>
-          </div>
-        </section>
-      </main>
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+            <section className="flex flex-col gap-6">
+              <WeatherCard
+                temperature={weatherSnapshot?.temperature ?? 0}
+                apparentTemperature={weatherSnapshot?.apparentTemperature ?? 0}
+                humidity={weatherSnapshot?.humidity ?? 0}
+                windSpeed={weatherSnapshot?.windSpeed ?? 0}
+                precipitationProbability={
+                  weatherSnapshot?.precipitationProbability ?? 0
+                }
+                isLoading={weatherQuery.isLoading}
+              />
+              {weatherQuery.data?.hourly && weatherRange === "24h" && (
+                <WeatherChart
+                  title="気温の推移"
+                  range="24h"
+                  data={weatherQuery.data.hourly}
+                  dataKey="temperature_2m"
+                  timeZone={weatherQuery.data.timezone}
+                  onRangeChange={setWeatherRange}
+                />
+              )}
+              {weatherQuery.data?.daily && weatherRange === "7d" && (
+                <WeatherChart
+                  title="気温の推移"
+                  range="7d"
+                  data={weatherQuery.data.daily}
+                  dataKey="temperature_2m_max"
+                  timeZone={weatherQuery.data.timezone}
+                  onRangeChange={setWeatherRange}
+                />
+              )}
+              {!weatherQuery.data?.hourly && !weatherQuery.data?.daily && (
+                <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
+              )}
 
-      <footer className="mx-auto flex w-full max-w-6xl flex-col gap-2 px-6 pb-10 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-        <div>Weather data by Open-Meteo.com</div>
-        <div className="flex flex-wrap gap-3">
-          <a
-            className="underline-offset-4 hover:underline"
-            href="https://open-meteo.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Open-Meteo
-          </a>
-          <a
-            className="underline-offset-4 hover:underline"
-            href="https://www.maptiler.com/copyright/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            MapTiler
-          </a>
-          <a
-            className="underline-offset-4 hover:underline"
-            href="https://www.openstreetmap.org/copyright"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            OpenStreetMap
-          </a>
-        </div>
-      </footer>
+              <AirQualityCard
+                pm25={airSnapshot?.pm25 ?? 0}
+                pm10={airSnapshot?.pm10 ?? 0}
+                nitrogenDioxide={airSnapshot?.nitrogenDioxide ?? 0}
+                ozone={airSnapshot?.ozone ?? 0}
+                isLoading={airQuery.isLoading}
+              />
+              {airQuery.data?.hourly ? (
+                <AQChart
+                  title="PM2.5 推移"
+                  data={airQuery.data.hourly}
+                  dataKey="pm2_5"
+                  range={airRange}
+                  timeZone={airQuery.data.timezone}
+                  onRangeChange={setAirRange}
+                />
+              ) : (
+                <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
+              )}
+            </section>
+
+            <section className="h-[420px] overflow-hidden rounded-3xl border bg-background p-4 shadow-sm xl:h-auto">
+              <MapView
+                center={[activeCity.lon, activeCity.lat]}
+                zoom={10}
+                markers={[
+                  {
+                    lng: activeCity.lon,
+                    lat: activeCity.lat,
+                    label: activeCity.label,
+                  },
+                ]}
+              />
+            </section>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
