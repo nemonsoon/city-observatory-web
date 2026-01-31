@@ -112,7 +112,8 @@ export default function Home() {
     cities.find((city) => city.id === selectedCityId) ?? cities[0];
 
   const weatherQuery = useWeatherData(activeCity, weatherRange);
-  const airQuery = useAirQualityData(activeCity, "5d");
+  const air24Query = useAirQualityData(activeCity, "24h");
+  const air5dQuery = useAirQualityData(activeCity, "5d");
 
   const weatherSnapshot = useMemo(() => {
     if (!weatherQuery.data?.hourly) return undefined;
@@ -128,13 +129,15 @@ export default function Home() {
   }, [weatherQuery.data]);
 
   const airSnapshot = useMemo(
-    () => getAirQualitySnapshot(airQuery.data?.hourly),
-    [airQuery.data],
+    () => getAirQualitySnapshot(air24Query.data?.hourly),
+    [air24Query.data],
   );
-  const airSeries = useMemo(
-    () => getAirQualitySeries(airQuery.data?.hourly, airRange),
-    [airQuery.data, airRange],
-  );
+  const airSeries = useMemo(() => {
+    if (airRange === "24h") {
+      return getAirQualitySeries(air24Query.data?.hourly, "24h");
+    }
+    return getAirQualitySeries(air5dQuery.data?.hourly, "5d");
+  }, [air24Query.data, air5dQuery.data, airRange]);
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -277,31 +280,31 @@ export default function Home() {
                 nitrogenDioxide={airSnapshot?.nitrogenDioxide ?? 0}
                 ozone={airSnapshot?.ozone ?? 0}
                 isLoading={
-                  airQuery.isLoading || airQuery.isFetching || !airSnapshot
+                  air24Query.isLoading || air24Query.isFetching || !airSnapshot
                 }
                 icon={<Wind size={16} className="text-muted-foreground" />}
               />
               {airRange === "24h" &&
-                (airSeries && !airQuery.isFetching ? (
+                (airSeries && !air24Query.isFetching ? (
                   <AQChart
                     title="PM2.5 推移"
                     data={airSeries}
                     dataKey="pm2_5"
                     range="24h"
-                    timeZone={airQuery.data?.timezone ?? activeCity.timezone}
+                    timeZone={air24Query.data?.timezone ?? activeCity.timezone}
                     onRangeChange={setAirRange}
                   />
                 ) : (
                   <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
                 ))}
               {airRange === "5d" &&
-                (airSeries && !airQuery.isFetching ? (
+                (airSeries && !air5dQuery.isFetching ? (
                   <AQChart
                     title="PM2.5 推移"
                     data={airSeries}
                     dataKey="pm2_5"
                     range="5d"
-                    timeZone={airQuery.data?.timezone ?? activeCity.timezone}
+                    timeZone={air5dQuery.data?.timezone ?? activeCity.timezone}
                     onRangeChange={setAirRange}
                   />
                 ) : (
