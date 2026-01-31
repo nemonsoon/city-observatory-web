@@ -10,7 +10,7 @@
 
 - [ ] アプリ名とコンセプトを 1 行で決定（City Observatory - 都市の"いま"を観測するダッシュボード）
 - [ ] 必須機能を 5 つに固定（検索/地図/天気/AQ/比較）
-- [ ] 技術スタックを明記（Next.js 16 + TypeScript + shadcn/ui + MapLibre + Recharts）ancy6ApYb8XIMXDzRMLj
+- [ ] 技術スタックを明記（Next.js 16 + TypeScript + shadcn/ui + MapLibre + Recharts）
 - [ ] データソースを確定（Open-Meteo + MapTiler）
 - [ ] 非商用・ポートフォリオ用途であることを README に記載
 
@@ -207,12 +207,12 @@ git push -u origin main
 
 ### 3-1. 型定義（FSD 構造に従う）
 
-- [ ] `src/entities/location/model/types.ts` 作成
+- [ ] `lib/types/location.ts` 作成
 
   ```typescript
   // coding-guidelines: typeを使用（interfaceは禁止）
   export type Location = {
-    id: string;
+    id: number;
     name: string;
     country: string;
     lat: number;
@@ -222,15 +222,15 @@ git push -u origin main
   };
   ```
 
-- [ ] `src/entities/weather/model/types.ts` 作成
-- [ ] `src/entities/air-quality/model/types.ts` 作成
+- [ ] `lib/types/weather.ts` 作成
+- [ ] `lib/types/air-quality.ts` 作成
 - [ ] 派生指標の型定義も`type`で作成
 
 ### 3-2. Zod バリデーター作成（FSD 構造、kebab-case）
 
-- [ ] `src/shared/lib/validators/location.ts` 作成
-- [ ] `src/shared/lib/validators/weather.ts` 作成
-- [ ] `src/shared/lib/validators/air-quality.ts` 作成
+- [ ] `lib/validators/location.ts` 作成
+- [ ] `lib/validators/weather.ts` 作成
+- [ ] `lib/validators/air-quality.ts` 作成
 
 ### 3-3. API クライアント実装（FSD 構造、kebab-case、トップレベル関数は function 宣言）
 
@@ -241,7 +241,7 @@ git push -u origin main
 
 #### 3-3-1. Geocoding API（都市検索）
 
-- [ ] `src/shared/api/geocoding.ts` 作成
+- [ ] `lib/api/geocoding.ts` 作成
 - [ ] `searchCities(query: string)` 関数実装（`function`宣言）
   - エンドポイント: `https://geocoding-api.open-meteo.com/v1/search`
   - パラメータ: `name=${query}&count=10&language=ja&format=json`
@@ -250,7 +250,7 @@ git push -u origin main
 
 #### 3-3-2. Weather Forecast API（天気予報）
 
-- [ ] `src/shared/api/weather.ts` 作成
+- [ ] `lib/api/weather.ts` 作成
 - [ ] `getWeatherForecast(lat: number, lon: number, range: '24h' | '7d')` 関数実装（`function`宣言）
   - エンドポイント: `https://api.open-meteo.com/v1/forecast`
   - パラメータ:
@@ -264,7 +264,7 @@ git push -u origin main
 #### 3-3-3. Air Quality API（大気質予報）
 
 - [ ] `lib/api/air-quality.ts` 作成
-- [ ] `getAirQualityForecast(lat: number, lon: number, range: '24h' | '7d')` 関数実装
+- [ ] `getAirQualityForecast(lat: number, lon: number, range: '24h' | '5d')` 関数実装
   - エンドポイント: `https://air-quality-api.open-meteo.com/v1/air-quality`
   - パラメータ:
     - `latitude=${lat}&longitude=${lon}`
@@ -368,27 +368,27 @@ git push -u origin main
 
 #### 5-2-1. useCitySearch
 
-- [ ] `hooks/useCitySearch.ts` 作成
+- [ ] `features/city-search/model/use-city-search.ts` 作成
 - [ ] デバウンス実装（`useDebounce` フックも作成）
 - [ ] TanStack Query で都市検索 API を呼び出し
 - [ ] 2 文字以上で検索開始（`enabled` 条件）
 
 #### 5-2-2. useWeatherData
 
-- [ ] `hooks/useWeatherData.ts` 作成
+- [ ] `features/weather/model/use-weather-data.ts` 作成
 - [ ] TanStack Query で天気 API を呼び出し
 - [ ] キャッシュ戦略: 15 分 stale
 - [ ] 429 エラー時はリトライしない
 
 #### 5-2-3. useAirQualityData
 
-- [ ] `hooks/useAirQualityData.ts` 作成
+- [ ] `features/air-quality/model/use-air-quality-data.ts` 作成
 - [ ] TanStack Query で大気質 API を呼び出し
 - [ ] キャッシュ戦略: 15 分 stale
 
 #### 5-2-4. useDerivedMetrics
 
-- [ ] `hooks/useDerivedMetrics.ts` 作成
+- [ ] `features/derived-metrics/model/use-derived-metrics.ts` 作成（必要なら）
 - [ ] 天気データと AQ データから派生指標を算出
 - [ ] `useMemo` でメモ化
 
@@ -398,50 +398,50 @@ git push -u origin main
 
 ### 6-1. レイアウトコンポーネント
 
-- [ ] `components/layout/Header.tsx` 作成
+- [ ] `components/layout/header.tsx` 作成
   - アプリ名、ロゴ、ナビゲーション
-- [ ] `components/layout/Footer.tsx` 作成
+- [ ] `components/layout/footer.tsx` 作成
   - クレジット表記（Open-Meteo）、GitHub リンク
-- [ ] `components/layout/ErrorBoundary.tsx` 作成（Class Component）
+- [ ] `components/layout/error-boundary.tsx` 作成（Class Component）
 
 ### 6-2. 都市検索コンポーネント
 
-- [ ] `components/features/city-search/CitySearchInput.tsx` 作成
+- [ ] `features/city-search/ui/city-search-input.tsx` 作成
   - テキスト入力
   - `useCitySearch` フック使用
   - デバウンス付きサジェスト
-- [ ] `components/features/city-search/CitySuggestions.tsx` 作成
+- [ ] `features/city-search/ui/city-suggestions.tsx` 作成
   - サジェスト一覧表示
   - キーボード操作対応（↑↓Enter Escape）
   - `data-testid` 付与
 
 ### 6-3. 天気コンポーネント
 
-- [ ] `components/features/weather/WeatherCard.tsx` 作成
+- [ ] `features/weather/ui/weather-card.tsx` 作成
   - 現在の気温、体感温度、湿度、風速、降水確率
   - アイコン表示（lucide-react）
   - ローディング・エラー状態
-- [ ] `components/features/weather/WeatherChart.tsx` 作成
+- [ ] `features/weather/ui/weather-chart.tsx` 作成
   - Recharts（AreaChart）使用
   - 24h/7d 切替対応
   - ツールチップ、グラデーション
   - dynamic import（SSR 無効化）
-- [ ] `components/features/weather/WeatherTable.tsx` 作成
+- [ ] `features/weather/ui/weather-table.tsx` 作成
   - 時間帯ごとの詳細データをテーブル表示
   - 仮想スクロール（任意、データ量次第）
 
 ### 6-4. 大気質コンポーネント
 
-- [ ] `components/features/air-quality/AQCard.tsx` 作成
+- [ ] `features/air-quality/ui/aq-card.tsx` 作成
   - PM2.5、PM10、NO2、O3 表示
   - AQI 分類によるカラーコード
-- [ ] `components/features/air-quality/AQChart.tsx` 作成
+- [ ] `features/air-quality/ui/aq-chart.tsx` 作成
   - Recharts 使用
-  - PM2.5 の時系列チャート
+  - PM2.5 の時系列チャート（24h/5d）
 
 ### 6-5. 比較コンポーネント
 
-- [ ] `components/features/compare/CompareView.tsx` 作成
+- [ ] `features/compare/ui/compare-view.tsx` 作成
   - 2 都市選択 UI（Select）
   - KPI カードの横並び比較
   - 比較チャート（重ねて表示）
@@ -458,16 +458,16 @@ git push -u origin main
 
 ### 7-1. 地図コンポーネント
 
-- [ ] `components/map/MapViewClient.tsx` 作成（Client Component）
+- [ ] `features/map/ui/map-view-client.tsx` 作成（Client Component）
   - MapLibre GL JS 初期化
   - 環境変数からスタイル URL 取得（`env.NEXT_PUBLIC_MAP_STYLE_LIGHT`）
   - マーカー表示
   - ズーム・パン対応
   - クレジット表記（attributionControl: true）
-- [ ] `components/map/MapView.tsx` 作成（dynamic import wrapper）
+- [ ] `features/map/ui/map-view.tsx` 作成（dynamic import wrapper）
   ```typescript
   import dynamic from "next/dynamic";
-  export const MapView = dynamic(() => import("./MapViewClient"), {
+  export const MapView = dynamic(() => import("./map-view-client"), {
     ssr: false,
     loading: () => <MapSkeleton />,
   });
@@ -475,14 +475,14 @@ git push -u origin main
 
 ### 7-2. 地図コントロール
 
-- [ ] `components/map/MapControls.tsx` 作成
+- [ ] `features/map/ui/map-controls.tsx` 作成
   - スタイル切替ボタン（ライト/ダーク）
   - レイヤー切替ボタン（天気/AQ/降水）
   - ズームイン/アウトボタン
 
 ### 7-3. MapTiler ロゴ表示（Free プラン）
 
-- [ ] MapViewClient 内にロゴ画像を追加
+- [ ] map-view-client 内にロゴ画像を追加
   ```tsx
   <div className="absolute bottom-2 left-2 z-10">
     <a
@@ -543,7 +543,8 @@ git push -u origin main
 ### 8-4. URL 同期
 
 - [ ] nuqs で状態を URL に同期
-  - `?city=tokyo&tab=weather&range=7d`
+  - 天気例: `?city=tokyo&tab=weather&range=7d`
+  - AQ例: `?city=tokyo&tab=aq&range=5d`
 - [ ] ブラウザバック/フォワード対応確認
 
 ---
@@ -652,17 +653,17 @@ pnpm build && pnpm start
 
 ---
 
-## フェーズ 12: テスト
+## フェーズ 12: テスト（必要最小限）
 
 ### 12-1. ユニットテスト
 
 - [ ] Vitest 設定ファイル作成（`vitest.config.ts`）
-- [ ] ドメインロジックのテスト実装
+- [ ] ドメインロジックのテスト実装（派生指標のみ）
   - `tests/unit/domain/comfort-score.test.ts`
   - `tests/unit/domain/outdoor-risk.test.ts`
   - `tests/unit/domain/best-time-slots.test.ts`
   - `tests/unit/domain/aqi-classification.test.ts`
-- [ ] テストカバレッジ確認（> 70%目標）
+- [ ] テストカバレッジ確認（必要に応じて）
   ```bash
   pnpm vitest --coverage
   ```
@@ -670,9 +671,9 @@ pnpm build && pnpm start
 ### 12-2. E2E テスト
 
 - [ ] Playwright 設定ファイル作成（`playwright.config.ts`）
-- [ ] 主要シナリオの E2E テスト実装
+- [ ] 主要シナリオの E2E テスト実装（最低 1 本）
   - `tests/e2e/dashboard.spec.ts`: 都市検索 → ダッシュボード表示
-  - `tests/e2e/compare.spec.ts`: 都市比較モード
+  - `tests/e2e/compare.spec.ts`: 都市比較モード（余裕があれば）
 - [ ] E2E テスト実行
   ```bash
   pnpm playwright test
