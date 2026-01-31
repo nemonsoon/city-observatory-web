@@ -10,10 +10,7 @@ import { useWeatherData } from "@/features/weather/model/use-weather-data";
 import { WeatherIcon } from "@/features/weather/ui/weather-icon";
 import { useAirQualityData } from "@/features/air-quality/model/use-air-quality-data";
 import { getAirQualitySeries } from "@/lib/domain/air-quality-series";
-import {
-  getWeatherBackground,
-  getWeatherClassification,
-} from "@/lib/domain/weather-classification";
+import { getWeatherClassification } from "@/lib/domain/weather-classification";
 import type { Location } from "@/lib/types/location";
 import { cn } from "@/lib/utils";
 
@@ -170,13 +167,6 @@ export default function ComparePage() {
   // 背景色をデータから生成
   const leftBgColor = temperatureToColor(leftSnapshot?.temperature ?? 20);
   const rightBgColor = temperatureToColor(rightSnapshot?.temperature ?? 20);
-  const leftWeatherBackground = leftSnapshot
-    ? getWeatherBackground(leftSnapshot.weathercode)
-    : undefined;
-  const rightWeatherBackground = rightSnapshot
-    ? getWeatherBackground(rightSnapshot.weathercode)
-    : undefined;
-
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* データドリブンな背景グラデーション */}
@@ -185,18 +175,14 @@ export default function ComparePage() {
         <div
           className="absolute left-0 top-0 h-full w-1/2 transition-all duration-1000"
           style={{
-            background: leftWeatherBackground
-              ? `${leftWeatherBackground}, radial-gradient(ellipse at 20% 50%, hsl(${leftBgColor}, 40%) 0%, hsl(${leftBgColor}, 20%) 40%, transparent 70%)`
-              : `radial-gradient(ellipse at 20% 50%, hsl(${leftBgColor}, 40%) 0%, hsl(${leftBgColor}, 20%) 40%, transparent 70%)`,
+            background: `radial-gradient(ellipse at 20% 50%, hsl(${leftBgColor}, 40%) 0%, hsl(${leftBgColor}, 20%) 40%, transparent 70%)`,
           }}
         />
         {/* 右側のグラデーション */}
         <div
           className="absolute right-0 top-0 h-full w-1/2 transition-all duration-1000"
           style={{
-            background: rightWeatherBackground
-              ? `${rightWeatherBackground}, radial-gradient(ellipse at 80% 50%, hsl(${rightBgColor}, 40%) 0%, hsl(${rightBgColor}, 20%) 40%, transparent 70%)`
-              : `radial-gradient(ellipse at 80% 50%, hsl(${rightBgColor}, 40%) 0%, hsl(${rightBgColor}, 20%) 40%, transparent 70%)`,
+            background: `radial-gradient(ellipse at 80% 50%, hsl(${rightBgColor}, 40%) 0%, hsl(${rightBgColor}, 20%) 40%, transparent 70%)`,
           }}
         />
         {/* 中央のブレンド */}

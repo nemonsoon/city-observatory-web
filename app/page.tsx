@@ -11,10 +11,7 @@ import { useWeatherData } from "@/features/weather/model/use-weather-data";
 import { WeatherIcon } from "@/features/weather/ui/weather-icon";
 import { useAirQualityData } from "@/features/air-quality/model/use-air-quality-data";
 import { getAirQualitySeries } from "@/lib/domain/air-quality-series";
-import {
-  getWeatherBackground,
-  getWeatherClassification,
-} from "@/lib/domain/weather-classification";
+import { getWeatherClassification } from "@/lib/domain/weather-classification";
 import type { Location } from "@/lib/types/location";
 import { cn } from "@/lib/utils";
 
@@ -148,10 +145,6 @@ export default function Home() {
 
   // 背景色をデータから生成
   const bgColor = temperatureToColor(weatherSnapshot?.temperature ?? 20);
-  const weatherBackground = weatherSnapshot
-    ? getWeatherBackground(weatherSnapshot.weathercode)
-    : undefined;
-
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* データドリブンな背景グラデーション */}
@@ -159,9 +152,7 @@ export default function Home() {
         <div
           className="absolute inset-0 transition-all duration-1000"
           style={{
-            background: weatherBackground
-              ? `${weatherBackground}, radial-gradient(ellipse at 50% 30%, hsl(${bgColor}, 45%) 0%, hsl(${bgColor}, 25%) 30%, transparent 65%)`
-              : `radial-gradient(ellipse at 50% 30%, hsl(${bgColor}, 45%) 0%, hsl(${bgColor}, 25%) 30%, transparent 65%)`,
+            background: `radial-gradient(ellipse at 50% 30%, hsl(${bgColor}, 45%) 0%, hsl(${bgColor}, 25%) 30%, transparent 65%)`,
           }}
         />
         <div className="absolute inset-0 -z-10 bg-background" />
