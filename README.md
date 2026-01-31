@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# City Observatory
 
-## Getting Started
+都市の"いま"を観測するダッシュボード。日本地図上で天気・大気質・花粉・体感指数などを可視化し、複数都市の比較を可能にするフロントエンド専用アプリです。
 
-First, run the development server:
+## 目的
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 私自身がよく散歩をするので、天気や花粉の情報を瞬時に把握したいと思い作成しました。
+
+## コンセプトと構成
+
+```mermaid
+flowchart LR
+  A[都市検索] --> B[都市ダッシュボード]
+  B --> C[地図表示]
+  B --> D[気象データ]
+  B --> E[大気質データ]
+  B --> F[比較モード]
+  F --> B
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 主要機能
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 都市検索と候補サジェスト
+- 地図のズーム・パン・レイヤー切替
+- 現在値と 24h/7d の時系列表示
+- 体感指数や快適度スコアの算出
+- 2 都市の横並び比較
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 画面構成
 
-## Learn More
+```mermaid
+flowchart TB
+  L[Landing] --> D[City Dashboard]
+  D --> M[Map View]
+  D --> P[Data Panels]
+  D --> C[Compare Mode]
+```
 
-To learn more about Next.js, take a look at the following resources:
+## アーキテクチャ概要
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```mermaid
+flowchart TB
+  UI[Next.js App Router] --> S[State: useState / jotai]
+  UI --> V[View Components]
+  V --> C[Charts]
+  V --> M[Map]
+  UI --> A[External APIs]
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ドキュメント
 
-## Deploy on Vercel
+- `docs/requirements.md` 要件定義
+- `docs/technical-specifications.md` 技術仕様
+- `docs/coding-guidelines.md` コーディング規約
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 開発コマンド
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm dev
+pnpm build
+pnpm start
+pnpm lint
+```
