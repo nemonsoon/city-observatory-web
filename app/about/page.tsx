@@ -9,45 +9,53 @@ export default function AboutPage() {
     <div className="relative min-h-screen overflow-hidden">
       {/* ノイズテクスチャ付きメッシュグラデーション */}
       <div className="fixed inset-0 -z-10">
-        {/* SVGノイズフィルター */}
+        {/* SVGノイズフィルター（強化版） */}
         <svg className="absolute h-0 w-0">
           <filter id="noise-about">
             <feTurbulence
               type="fractalNoise"
-              baseFrequency="0.8"
-              numOctaves="4"
+              baseFrequency="0.9"
+              numOctaves="5"
               stitchTiles="stitch"
             />
             <feColorMatrix type="saturate" values="0" />
-            <feBlend mode="multiply" in="SourceGraphic" />
           </filter>
         </svg>
 
-        {/* 複数のグラデーションレイヤー - 紫〜青系の深い色合い */}
+        {/* 複数のグラデーションレイヤー - 深いグリーン〜アンバー〜チャコール */}
         <div
-          className="absolute inset-0 opacity-60"
+          className="absolute inset-0 opacity-50"
           style={{
             background: `
-              radial-gradient(circle at 15% 25%, hsl(270, 75%, 50%) 0%, transparent 45%),
-              radial-gradient(circle at 75% 50%, hsl(220, 70%, 45%) 0%, transparent 50%),
-              radial-gradient(ellipse at 45% 85%, hsl(250, 65%, 40%) 0%, transparent 55%)
+              radial-gradient(circle at 15% 25%, hsl(160, 35%, 25%) 0%, transparent 45%),
+              radial-gradient(circle at 75% 50%, hsl(30, 40%, 28%) 0%, transparent 50%),
+              radial-gradient(ellipse at 45% 85%, hsl(25, 30%, 22%) 0%, transparent 55%)
             `,
           }}
         />
         <div
-          className="absolute inset-0 opacity-35"
+          className="absolute inset-0 opacity-30"
           style={{
             background: `
-              radial-gradient(circle at 55% 35%, hsl(190, 60%, 50%) 0%, transparent 40%),
-              radial-gradient(circle at 25% 75%, hsl(280, 55%, 45%) 0%, transparent 48%)
+              radial-gradient(circle at 55% 35%, hsl(45, 35%, 30%) 0%, transparent 40%),
+              radial-gradient(circle at 25% 75%, hsl(0, 0%, 18%) 0%, transparent 48%)
             `,
           }}
         />
 
-        {/* ノイズテクスチャオーバーレイ */}
+        {/* ノイズテクスチャオーバーレイ（強化） */}
         <div
-          className="absolute inset-0 opacity-[0.15] mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.35] mix-blend-soft-light"
           style={{ filter: "url(#noise-about)" }}
+        />
+
+        {/* ビネット効果（周辺を暗く） */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%)",
+          }}
         />
 
         {/* ベース背景 */}

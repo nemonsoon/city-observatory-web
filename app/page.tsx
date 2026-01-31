@@ -49,45 +49,53 @@ export default function Home() {
     <div className="relative min-h-screen overflow-hidden">
       {/* ノイズテクスチャ付きメッシュグラデーション */}
       <div className="fixed inset-0 -z-10">
-        {/* SVGノイズフィルター */}
+        {/* SVGノイズフィルター（強化版） */}
         <svg className="absolute h-0 w-0">
           <filter id="noise">
             <feTurbulence
               type="fractalNoise"
-              baseFrequency="0.8"
-              numOctaves="4"
+              baseFrequency="0.9"
+              numOctaves="5"
               stitchTiles="stitch"
             />
             <feColorMatrix type="saturate" values="0" />
-            <feBlend mode="multiply" in="SourceGraphic" />
           </filter>
         </svg>
 
-        {/* 複数のグラデーションレイヤー */}
+        {/* 複数のグラデーションレイヤー（彩度を抑えて高級感） */}
         <div
-          className="absolute inset-0 opacity-60 transition-all duration-1000"
+          className="absolute inset-0 opacity-50 transition-all duration-1000"
           style={{
             background: `
-              radial-gradient(circle at 20% 20%, hsl(${bgColor}, 55%) 0%, transparent 50%),
-              radial-gradient(circle at 80% 60%, hsl(${bgColor}, 45%) 0%, transparent 50%),
-              radial-gradient(ellipse at 50% 80%, hsl(${bgColor}, 35%) 0%, transparent 60%)
+              radial-gradient(circle at 20% 20%, hsl(${bgColor}, 28%) 0%, transparent 50%),
+              radial-gradient(circle at 80% 60%, hsl(${bgColor}, 22%) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 80%, hsl(${bgColor}, 18%) 0%, transparent 60%)
             `,
           }}
         />
         <div
-          className="absolute inset-0 opacity-40 transition-all duration-1000"
+          className="absolute inset-0 opacity-30 transition-all duration-1000"
           style={{
             background: `
-              radial-gradient(circle at 60% 40%, hsl(${(parseInt(bgColor.split(" ")[0]) + 30) % 360} ${bgColor.split(" ")[1]} ${bgColor.split(" ")[2]}, 40%) 0%, transparent 45%),
-              radial-gradient(circle at 30% 70%, hsl(${(parseInt(bgColor.split(" ")[0]) - 20) % 360} ${bgColor.split(" ")[1]} ${bgColor.split(" ")[2]}, 35%) 0%, transparent 50%)
+              radial-gradient(circle at 60% 40%, hsl(${(parseInt(bgColor.split(" ")[0]) + 30) % 360} ${bgColor.split(" ")[1]} ${bgColor.split(" ")[2]}, 20%) 0%, transparent 45%),
+              radial-gradient(circle at 30% 70%, hsl(${(parseInt(bgColor.split(" ")[0]) - 20) % 360} ${bgColor.split(" ")[1]} ${bgColor.split(" ")[2]}, 16%) 0%, transparent 50%)
             `,
           }}
         />
 
-        {/* ノイズテクスチャオーバーレイ */}
+        {/* ノイズテクスチャオーバーレイ（強化） */}
         <div
-          className="absolute inset-0 opacity-[0.15] mix-blend-overlay"
+          className="absolute inset-0 opacity-[0.35] mix-blend-soft-light"
           style={{ filter: "url(#noise)" }}
+        />
+
+        {/* ビネット効果（周辺を暗く） */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%)",
+          }}
         />
 
         {/* ベース背景 */}
