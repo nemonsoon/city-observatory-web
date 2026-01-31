@@ -1110,11 +1110,13 @@ pnpm audit
 **Preview 環境**:
 
 - `NEXT_PUBLIC_MAPTILER_KEY`: DEV キー
+- `NEXT_PUBLIC_OPENWEATHER_KEY`: DEV キー
 - 他の環境変数も同様に設定
 
 **Production 環境**:
 
 - `NEXT_PUBLIC_MAPTILER_KEY`: PROD キー（本番 URL のみ許可）
+- `NEXT_PUBLIC_OPENWEATHER_KEY`: PROD キー
 - 他の環境変数も同様に設定
 
 ### 11.3 ビルド最適化
