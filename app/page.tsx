@@ -6,6 +6,7 @@ import { WeatherChart } from "@/features/weather/ui/weather-chart";
 import { AirQualityCard } from "@/features/air-quality/ui/aq-card";
 import { AQChart } from "@/features/air-quality/ui/aq-chart";
 import { MapView } from "@/features/map/ui/map-view";
+import { MapOverlayToggle } from "@/features/map/ui/map-overlay-toggle";
 import { useWeatherData } from "@/features/weather/model/use-weather-data";
 import { useAirQualityData } from "@/features/air-quality/model/use-air-quality-data";
 import type { Location } from "@/lib/types/location";
@@ -99,6 +100,9 @@ export default function Home() {
   const [selectedCityId, setSelectedCityId] = useState<number>(cities[0].id);
   const [weatherRange, setWeatherRange] = useState<"24h" | "7d">("24h");
   const [airRange, setAirRange] = useState<"24h" | "5d">("24h");
+  const [mapOverlay, setMapOverlay] = useState<"none" | "precipitation">(
+    "none",
+  );
   const { theme, setTheme } = useTheme();
 
   const activeCity =
@@ -247,7 +251,10 @@ export default function Home() {
               )}
             </section>
 
-            <section className="h-[320px] overflow-hidden rounded-3xl border bg-background p-3 shadow-sm md:h-[420px] xl:h-auto xl:p-4">
+            <section className="relative h-[320px] overflow-hidden rounded-3xl border bg-background p-3 shadow-sm md:h-[420px] xl:h-auto xl:p-4">
+              <div className="absolute left-6 top-6 z-10">
+                <MapOverlayToggle value={mapOverlay} onChange={setMapOverlay} />
+              </div>
               <MapView
                 center={[activeCity.lon, activeCity.lat]}
                 zoom={10}
@@ -258,6 +265,7 @@ export default function Home() {
                     label: activeCity.label,
                   },
                 ]}
+                overlay={mapOverlay}
               />
             </section>
           </div>
