@@ -49,6 +49,7 @@ export function getSunPhase(now: Date, sunrise: Date, sunset: Date): SunPhase {
   const sunsetTime = sunset.getTime();
 
   if (nowTime < sunriseTime) return "night";
+  // 日の出/日の入り前後1時間を朝焼け・夕焼けの演出帯として扱う
   if (nowTime < sunriseTime + 60 * 60 * 1000) return "dawn";
   if (nowTime < sunsetTime - 60 * 60 * 1000) return "day";
   if (nowTime < sunsetTime) return "dusk";

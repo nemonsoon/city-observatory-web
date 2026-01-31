@@ -23,6 +23,7 @@ const uvColors: Record<UVLevel, string> = {
 };
 
 export function classifyUVIndex(index: number): UVLevel {
+  // 国際的に一般的なUV Indexの区分（0-2/3-5/6-7/8-10/11+）
   if (index <= 2) return "low";
   if (index <= 5) return "moderate";
   if (index <= 7) return "high";
