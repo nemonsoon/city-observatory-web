@@ -22,23 +22,23 @@ export default function AboutPage() {
           </filter>
         </svg>
 
-        {/* 複数のグラデーションレイヤー - 深いグリーン〜アンバー〜チャコール */}
+        {/* Atmospheric Twilight: 大気の黄昏時の層を表現 */}
         <div
-          className="absolute inset-0 opacity-50"
+          className="absolute inset-0 opacity-55"
           style={{
             background: `
-              radial-gradient(circle at 15% 25%, hsl(160, 35%, 25%) 0%, transparent 45%),
-              radial-gradient(circle at 75% 50%, hsl(30, 40%, 28%) 0%, transparent 50%),
-              radial-gradient(ellipse at 45% 85%, hsl(25, 30%, 22%) 0%, transparent 55%)
+              radial-gradient(circle at 15% 20%, hsl(230, 35%, 15%) 0%, transparent 45%),
+              radial-gradient(ellipse at 80% 50%, hsl(260, 20%, 18%) 0%, transparent 50%),
+              radial-gradient(circle at 40% 85%, hsl(15, 45%, 22%) 0%, transparent 55%)
             `,
           }}
         />
         <div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-35"
           style={{
             background: `
-              radial-gradient(circle at 55% 35%, hsl(45, 35%, 30%) 0%, transparent 40%),
-              radial-gradient(circle at 25% 75%, hsl(0, 0%, 18%) 0%, transparent 48%)
+              radial-gradient(circle at 60% 30%, hsl(25, 15%, 12%) 0%, transparent 42%),
+              radial-gradient(ellipse at 20% 70%, hsl(230, 30%, 18%) 0%, transparent 48%)
             `,
           }}
         />
