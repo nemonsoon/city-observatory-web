@@ -24,6 +24,27 @@ type MapViewClientProps = {
   overlay?: "none" | "precipitation";
 };
 
+type OverlayConfig = {
+  id: string;
+  sourceId: string;
+  tiles: string[];
+  opacity: number;
+};
+
+function getOverlayConfig(type: "none" | "precipitation") {
+  if (type === "precipitation") {
+    return {
+      id: "precipitation-layer",
+      sourceId: "precipitation-source",
+      tiles: [
+        "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png",
+      ],
+      opacity: 0.6,
+    } satisfies OverlayConfig;
+  }
+  return undefined;
+}
+
 export function MapViewClient({
   center,
   zoom = 10,
@@ -74,35 +95,56 @@ export function MapViewClient({
     if (!mapRef.current) return;
 
     const map = mapRef.current;
-    const sourceId = "precipitation-source";
-    const layerId = "precipitation-layer";
-    const tileUrl =
-      "https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png";
+    const config = getOverlayConfig(overlay);
 
-    const hasLayer = Boolean(map.getLayer(layerId));
-    const hasSource = Boolean(map.getSource(sourceId));
+    const applyOverlay = () => {
+      if (!config) {
+        if (map.getLayer("precipitation-layer")) {
+          map.removeLayer("precipitation-layer");
+        }
+        if (map.getSource("precipitation-source")) {
+          map.removeSource("precipitation-source");
+        }
+        return;
+      }
 
-    if (overlay === "precipitation") {
-      if (!hasSource) {
-        map.addSource(sourceId, {
+      if (!map.getSource(config.sourceId)) {
+        map.addSource(config.sourceId, {
           type: "raster",
-          tiles: [tileUrl],
+          tiles: config.tiles,
           tileSize: 256,
         });
       }
-      if (!hasLayer) {
+      if (!map.getLayer(config.id)) {
         map.addLayer({
-          id: layerId,
+          id: config.id,
           type: "raster",
-          source: sourceId,
+          source: config.sourceId,
           paint: {
-            "raster-opacity": 0.6,
+            "raster-opacity": config.opacity,
           },
         });
       }
+    };
+
+    if (map.isStyleLoaded()) {
+      try {
+        applyOverlay();
+      } catch {
+        // no-op: overlay failure should not crash the map
+      }
     } else {
-      if (hasLayer) map.removeLayer(layerId);
-      if (hasSource) map.removeSource(sourceId);
+      const handleLoad = () => {
+        try {
+          applyOverlay();
+        } catch {
+          // no-op: overlay failure should not crash the map
+        }
+      };
+      map.once("load", handleLoad);
+      return () => {
+        map.off("load", handleLoad);
+      };
     }
   }, [overlay]);
 
