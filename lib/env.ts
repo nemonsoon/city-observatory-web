@@ -7,8 +7,8 @@ const envSchema = z.object({
   NEXT_PUBLIC_DEFAULT_CITY: z.string().default("tokyo"),
   NEXT_PUBLIC_FEATURE_MAP: z
     .string()
-    .transform((value) => value === "true")
-    .default("true"),
+    .default("true")
+    .transform((value) => value === "true"),
 });
 
 export const env = envSchema.parse({
