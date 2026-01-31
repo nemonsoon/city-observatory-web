@@ -1,6 +1,10 @@
 import { APIError, handleAPIError } from "./errors";
 import { AirQualityResponseSchema } from "@/lib/validators/air-quality";
-import type { AirQualityResponse } from "@/lib/types/air-quality";
+import { normalizeAirQualityResponse } from "@/lib/domain/normalize-air-quality";
+import type {
+  AirQualityResponse,
+  AirQualityResponseRaw,
+} from "@/lib/types/air-quality";
 
 export async function getAirQualityForecast(
   lat: number,
@@ -24,7 +28,8 @@ export async function getAirQualityForecast(
     }
 
     const data = await response.json();
-    return AirQualityResponseSchema.parse(data);
+    const parsed: AirQualityResponseRaw = AirQualityResponseSchema.parse(data);
+    return normalizeAirQualityResponse(parsed);
   } catch (error) {
     throw handleAPIError(error);
   }
