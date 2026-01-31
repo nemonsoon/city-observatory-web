@@ -279,18 +279,32 @@ export default function Home() {
                 isLoading={airQuery.isLoading}
                 icon={<Wind size={16} className="text-muted-foreground" />}
               />
-              {airQuery.data?.hourly ? (
-                <AQChart
-                  title="PM2.5 推移"
-                  data={airQuery.data.hourly}
-                  dataKey="pm2_5"
-                  range={airRange}
-                  timeZone={airQuery.data.timezone}
-                  onRangeChange={setAirRange}
-                />
-              ) : (
-                <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
-              )}
+              {airRange === "24h" &&
+                (airQuery.data?.hourly ? (
+                  <AQChart
+                    title="PM2.5 推移"
+                    data={airQuery.data.hourly}
+                    dataKey="pm2_5"
+                    range="24h"
+                    timeZone={airQuery.data.timezone}
+                    onRangeChange={setAirRange}
+                  />
+                ) : (
+                  <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
+                ))}
+              {airRange === "5d" &&
+                (airQuery.data?.hourly ? (
+                  <AQChart
+                    title="PM2.5 推移"
+                    data={airQuery.data.hourly}
+                    dataKey="pm2_5"
+                    range="5d"
+                    timeZone={airQuery.data.timezone}
+                    onRangeChange={setAirRange}
+                  />
+                ) : (
+                  <div className="h-[320px] w-full animate-pulse rounded-2xl border bg-muted/30" />
+                ))}
             </section>
 
             <section className="relative h-[320px] overflow-hidden rounded-3xl border bg-background p-3 shadow-sm md:h-[420px] xl:h-auto xl:p-4">
