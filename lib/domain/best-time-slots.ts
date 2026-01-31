@@ -4,7 +4,7 @@ type TimeSlot = {
   score: number;
 };
 
-// 推測: 上位スコアの時間帯を抽出（重複を避ける）
+// 体感スコアの高い時間帯を優先して抽出し、行動候補を少数に絞るための簡易ロジック
 export function findBestTimeSlots(
   times: string[],
   scores: number[],
@@ -21,6 +21,7 @@ export function findBestTimeSlots(
   for (const entry of sorted) {
     if (result.length >= limit) break;
     const startTime = entry.time;
+    // 1時間刻みの予報データを前提に、スロットを1時間幅で扱う
     const endTime = new Date(
       new Date(entry.time).getTime() + 60 * 60 * 1000,
     ).toISOString();

@@ -76,6 +76,7 @@ const weatherBackgrounds: Record<WeatherCondition, string> = {
 };
 
 export function getWeatherCondition(code: number): WeatherCondition {
+  // Open-Meteoのweathercode定義に合わせた分類
   if (code === 0) return "clear";
   if (code === 1) return "mostly-clear";
   if (code === 2) return "partly-cloudy";

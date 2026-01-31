@@ -24,6 +24,7 @@ function normalizeDegree(degree: number): number {
 
 function getWindDirectionIndex(degree: number): number {
   const normalized = normalizeDegree(degree);
+  // 16方位（360/16=22.5°）の中心に合わせるため11.25°オフセット
   return Math.floor((normalized + 11.25) / 22.5) % 16;
 }
 
