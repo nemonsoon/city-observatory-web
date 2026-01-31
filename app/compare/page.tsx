@@ -10,6 +10,7 @@ import { useWeatherData } from "@/features/weather/model/use-weather-data";
 import { WeatherIcon } from "@/features/weather/ui/weather-icon";
 import { UVCard } from "@/features/weather/ui/uv-card";
 import { WindCard } from "@/features/weather/ui/wind-card";
+import { SunPathCard } from "@/features/weather/ui/sun-path-card";
 import { useAirQualityData } from "@/features/air-quality/model/use-air-quality-data";
 import { getAirQualitySeries } from "@/lib/domain/air-quality-series";
 import { getWeatherClassification } from "@/lib/domain/weather-classification";
@@ -18,6 +19,12 @@ import {
   getWindDirectionLabel,
   getWindDirectionRotation,
 } from "@/lib/domain/wind-direction";
+import {
+  getSunPhase,
+  getSunPhaseBackground,
+  getSunPhaseLabel,
+  getSunProgress,
+} from "@/lib/domain/sun-path";
 import type { Location } from "@/lib/types/location";
 import { cn } from "@/lib/utils";
 
@@ -194,6 +201,42 @@ export default function ComparePage() {
   const rightWindDirectionRotation = rightSnapshot
     ? getWindDirectionRotation(rightSnapshot.windDirection)
     : 0;
+  const leftSunriseAt = leftWeather.data?.daily?.sunrise?.[0];
+  const leftSunsetAt = leftWeather.data?.daily?.sunset?.[0];
+  const rightSunriseAt = rightWeather.data?.daily?.sunrise?.[0];
+  const rightSunsetAt = rightWeather.data?.daily?.sunset?.[0];
+  const leftSunPhase =
+    leftSunriseAt && leftSunsetAt
+      ? getSunPhase(new Date(), new Date(leftSunriseAt), new Date(leftSunsetAt))
+      : "night";
+  const rightSunPhase =
+    rightSunriseAt && rightSunsetAt
+      ? getSunPhase(
+          new Date(),
+          new Date(rightSunriseAt),
+          new Date(rightSunsetAt),
+        )
+      : "night";
+  const leftSunProgress =
+    leftSunriseAt && leftSunsetAt
+      ? getSunProgress(
+          new Date(),
+          new Date(leftSunriseAt),
+          new Date(leftSunsetAt),
+        )
+      : 0;
+  const rightSunProgress =
+    rightSunriseAt && rightSunsetAt
+      ? getSunProgress(
+          new Date(),
+          new Date(rightSunriseAt),
+          new Date(rightSunsetAt),
+        )
+      : 0;
+  const leftSunPhaseLabel = getSunPhaseLabel(leftSunPhase);
+  const rightSunPhaseLabel = getSunPhaseLabel(rightSunPhase);
+  const leftSunPhaseBackground = getSunPhaseBackground(leftSunPhase);
+  const rightSunPhaseBackground = getSunPhaseBackground(rightSunPhase);
 
   // 背景色をデータから生成
   const leftBgColor = temperatureToColor(leftSnapshot?.temperature ?? 20);
@@ -392,6 +435,27 @@ export default function ComparePage() {
               />
             </div>
 
+            {/* 日の出/日の入り */}
+            {leftSunriseAt && leftSunsetAt ? (
+              <div className="group rounded-3xl border border-foreground/10 bg-background/50 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-foreground/20 hover:bg-background/60 hover:shadow-2xl hover:-translate-y-1">
+                <SunPathCard
+                  sunrise={new Date(leftSunriseAt).toLocaleTimeString("ja-JP", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  sunset={new Date(leftSunsetAt).toLocaleTimeString("ja-JP", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  nowLabel={formatLocalTime(leftCity.timezone)}
+                  phaseLabel={leftSunPhaseLabel}
+                  progress={leftSunProgress}
+                  background={leftSunPhaseBackground}
+                  isLoading={leftWeather.isLoading}
+                />
+              </div>
+            ) : null}
+
             {/* 気温の推移 */}
             {leftWeather.data?.hourly ? (
               <div className="group rounded-3xl border border-foreground/10 bg-background/50 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-foreground/20 hover:bg-background/60 hover:shadow-2xl hover:-translate-y-1">
@@ -478,6 +542,30 @@ export default function ComparePage() {
                 isLoading={rightWeather.isLoading}
               />
             </div>
+
+            {/* 日の出/日の入り */}
+            {rightSunriseAt && rightSunsetAt ? (
+              <div className="group rounded-3xl border border-foreground/10 bg-background/50 p-6 backdrop-blur-2xl transition-all duration-300 hover:border-foreground/20 hover:bg-background/60 hover:shadow-2xl hover:-translate-y-1">
+                <SunPathCard
+                  sunrise={new Date(rightSunriseAt).toLocaleTimeString(
+                    "ja-JP",
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    },
+                  )}
+                  sunset={new Date(rightSunsetAt).toLocaleTimeString("ja-JP", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                  nowLabel={formatLocalTime(rightCity.timezone)}
+                  phaseLabel={rightSunPhaseLabel}
+                  progress={rightSunProgress}
+                  background={rightSunPhaseBackground}
+                  isLoading={rightWeather.isLoading}
+                />
+              </div>
+            ) : null}
 
             {/* 気温の推移 */}
             {rightWeather.data?.hourly ? (
