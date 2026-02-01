@@ -25,7 +25,7 @@
 
 ### 3. Aboutページ (`/about`)
 
-- 開発者プロフィール
+- 私のプロフィール
 - 技術スタック
 - 連絡先情報
 
@@ -172,13 +172,6 @@ gh issue develop <number> -b issue-<number>-<slug>
 # PR作成
 gh pr create -t "Issue #<number>: <title>" -b "Closes #<number>"
 ```
-
-## 👤 開発者
-
-**nuko-chan**
-
-- X (Twitter): [@nukochan_123](https://x.com/nukochan_123)
-- 技術ブログ: [nuko-chan.pages.dev](https://nuko-chan.pages.dev)
 
 ## 🙏 謝辞
 
