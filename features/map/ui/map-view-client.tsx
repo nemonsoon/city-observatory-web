@@ -2,19 +2,36 @@
 
 import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
+import { useTheme } from "next-themes";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { env } from "@/lib/env";
 
-function buildMapStyleUrl() {
-  const baseUrl = env.NEXT_PUBLIC_MAP_STYLE_LIGHT;
-  const key = env.NEXT_PUBLIC_MAPTILER_KEY;
+// DESIGN.md § 8 Map。dataviz はデータを重ねる前提で彩度を落とした地図
+const defaultStyleUrls = {
+  light: "https://api.maptiler.com/maps/dataviz/style.json",
+  dark: "https://api.maptiler.com/maps/dataviz-dark/style.json",
+} as const;
 
-  if (!baseUrl) return undefined;
+function buildMapStyleUrl(scheme: "light" | "dark") {
+  const baseUrl =
+    scheme === "dark"
+      ? (env.NEXT_PUBLIC_MAP_STYLE_DARK ?? defaultStyleUrls.dark)
+      : (env.NEXT_PUBLIC_MAP_STYLE_LIGHT ?? defaultStyleUrls.light);
+
   const url = new URL(baseUrl);
   if (!url.searchParams.get("key")) {
-    url.searchParams.set("key", key);
+    url.searchParams.set("key", env.NEXT_PUBLIC_MAPTILER_KEY);
   }
   return url.toString();
+}
+
+/** MapLibre の marker は CSS 変数を解釈しないため、実際に計算された色を渡す */
+function resolveMarkerColor() {
+  if (typeof window === "undefined") return "#16222b";
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue("--foreground")
+    .trim();
+  return value || "#16222b";
 }
 
 type MapViewClientProps = {
@@ -60,11 +77,12 @@ export function MapViewClient({
   const mapRef = useRef<maplibregl.Map | undefined>(undefined);
   const markersRef = useRef<maplibregl.Marker[]>([]);
   const [hasError, setHasError] = useState<boolean>(false);
-  const styleUrl = buildMapStyleUrl();
+  const { resolvedTheme } = useTheme();
+  const scheme = resolvedTheme === "dark" ? "dark" : "light";
+  const styleUrl = buildMapStyleUrl(scheme);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    if (!styleUrl) return;
 
     mapRef.current = new maplibregl.Map({
       container: containerRef.current,
@@ -103,11 +121,11 @@ export function MapViewClient({
         ? markers
         : [{ lng: center[0], lat: center[1] }];
     markersRef.current = nextMarkers.map((marker) =>
-      new maplibregl.Marker({ color: "hsl(var(--primary))" })
+      new maplibregl.Marker({ color: resolveMarkerColor() })
         .setLngLat([marker.lng, marker.lat])
         .addTo(mapRef.current!),
     );
-  }, [markers, center]);
+  }, [markers, center, scheme]);
 
   useEffect(() => {
     if (!mapRef.current) return;
@@ -167,14 +185,9 @@ export function MapViewClient({
   }, [overlay]);
 
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-2xl border bg-background shadow-sm">
-      {!styleUrl && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 text-sm text-muted-foreground">
-          地図のスタイルURLが設定されていません
-        </div>
-      )}
-      {hasError && styleUrl && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 text-sm text-muted-foreground">
+    <div className="relative h-full w-full overflow-hidden bg-background">
+      {hasError && (
+        <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 text-note text-muted-foreground">
           地図を読み込めませんでした
         </div>
       )}
