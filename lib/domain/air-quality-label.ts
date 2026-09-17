@@ -7,3 +7,14 @@ export function classifyAirQualityLabel(pm25: number): AirQualityLabel {
   if (pm25 <= 55.4) return "unhealthy";
   return "hazardous";
 }
+
+const airQualityLabelText: Record<AirQualityLabel, string> = {
+  good: "良好",
+  moderate: "普通",
+  unhealthy: "悪い",
+  hazardous: "危険",
+};
+
+export function getAirQualityLabelText(pm25: number): string {
+  return airQualityLabelText[classifyAirQualityLabel(pm25)];
+}

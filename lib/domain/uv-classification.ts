@@ -1,9 +1,11 @@
+import type { ObservationLevel } from "@/lib/domain/observation-level";
+
 export type UVLevel = "low" | "moderate" | "high" | "very-high" | "extreme";
 
 export type UVClassification = {
   level: UVLevel;
   label: string;
-  color: string;
+  severity: ObservationLevel;
 };
 
 const uvLabels: Record<UVLevel, string> = {
@@ -14,13 +16,12 @@ const uvLabels: Record<UVLevel, string> = {
   extreme: "極端に高い",
 };
 
-// Environmental Semantic Colors (DESIGN.md)
-const uvColors: Record<UVLevel, string> = {
-  low: "oklch(0.72 0.14 180)",
-  moderate: "oklch(0.80 0.16 85)",
-  high: "oklch(0.72 0.19 55)",
-  "very-high": "oklch(0.62 0.24 25)",
-  extreme: "oklch(0.62 0.24 25)",
+const uvSeverities: Record<UVLevel, ObservationLevel> = {
+  low: 1,
+  moderate: 3,
+  high: 4,
+  "very-high": 5,
+  extreme: 5,
 };
 
 export function classifyUVIndex(index: number): UVLevel {
@@ -37,7 +38,7 @@ export function getUVClassification(index: number): UVClassification {
   return {
     level,
     label: uvLabels[level],
-    color: uvColors[level],
+    severity: uvSeverities[level],
   };
 }
 

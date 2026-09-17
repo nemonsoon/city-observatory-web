@@ -32,9 +32,9 @@ describe("classifyUVIndex", () => {
 });
 
 describe("getUVClassification", () => {
-  it("returns label and color", () => {
+  it("returns label and severity", () => {
     const classification = getUVClassification(6.5);
     expect(classification.label).toBe("高い");
-    expect(classification.color).toContain("oklch");
+    expect(classification.severity).toBe(4);
   });
 });
