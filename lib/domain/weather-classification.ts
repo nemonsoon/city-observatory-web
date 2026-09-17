@@ -1,3 +1,5 @@
+import type { ObservationLevel } from "@/lib/domain/observation-level";
+
 export type WeatherCondition =
   | "clear"
   | "mostly-clear"
@@ -27,8 +29,7 @@ type WeatherClassification = {
   condition: WeatherCondition;
   label: string;
   iconKey: WeatherIconKey;
-  background: string;
-  badgeColor: string;
+  severity: ObservationLevel;
 };
 
 const weatherLabels: Record<WeatherCondition, string> = {
@@ -61,35 +62,20 @@ const weatherIcons: Record<WeatherCondition, WeatherIconKey> = {
   unknown: "cloud-alert",
 };
 
-const weatherBackgrounds: Record<WeatherCondition, string> = {
-  clear: "linear-gradient(to bottom, #87CEEB, #E0F6FF)",
-  "mostly-clear": "linear-gradient(to bottom, #B0C4DE, #E8F4F8)",
-  "partly-cloudy": "linear-gradient(to bottom, #A9C3D8, #E6F0F6)",
-  overcast: "linear-gradient(to bottom, #778899, #D3D3D3)",
-  fog: "linear-gradient(to bottom, #B0B8BF, #E1E5E8)",
-  drizzle: "linear-gradient(to bottom, #7BA0C4, #C5D8E8)",
-  rain: "linear-gradient(to bottom, #4682B4, #B0C4DE)",
-  snow: "linear-gradient(to bottom, #E0FFFF, #FFFFFF)",
-  "rain-showers": "linear-gradient(to bottom, #5A8DBB, #BCD0E4)",
-  "snow-showers": "linear-gradient(to bottom, #E6F7FF, #FFFFFF)",
-  thunderstorm: "linear-gradient(to bottom, #2F4F4F, #696969)",
-  unknown: "linear-gradient(to bottom, #9CA3AF, #E5E7EB)",
-};
-
-// Environmental Semantic Colors (DESIGN.md) — 天気条件の深刻度にマッピング
-const weatherBadgeColors: Record<WeatherCondition, string> = {
-  clear: "oklch(0.72 0.14 180)", // teal
-  "mostly-clear": "oklch(0.72 0.14 180)", // teal
-  "partly-cloudy": "oklch(0.75 0.12 220)", // sky
-  overcast: "oklch(0.75 0.12 220)", // sky
-  fog: "oklch(0.80 0.16 85)", // amber
-  drizzle: "oklch(0.75 0.12 220)", // sky
-  rain: "oklch(0.80 0.16 85)", // amber
-  snow: "oklch(0.80 0.16 85)", // amber
-  "rain-showers": "oklch(0.72 0.19 55)", // orange
-  "snow-showers": "oklch(0.72 0.19 55)", // orange
-  thunderstorm: "oklch(0.62 0.24 25)", // red
-  unknown: "oklch(0.75 0.12 220)", // sky
+// 天気の深刻度。DESIGN.md § 2 Level Scale に対応する
+const weatherSeverities: Record<WeatherCondition, ObservationLevel> = {
+  clear: 1,
+  "mostly-clear": 1,
+  "partly-cloudy": 2,
+  overcast: 2,
+  fog: 3,
+  drizzle: 2,
+  rain: 3,
+  snow: 3,
+  "rain-showers": 4,
+  "snow-showers": 4,
+  thunderstorm: 5,
+  unknown: 2,
 };
 
 export function getWeatherCondition(code: number): WeatherCondition {
@@ -114,8 +100,7 @@ export function getWeatherClassification(code: number): WeatherClassification {
     condition,
     label: weatherLabels[condition],
     iconKey: weatherIcons[condition],
-    background: weatherBackgrounds[condition],
-    badgeColor: weatherBadgeColors[condition],
+    severity: weatherSeverities[condition],
   };
 }
 
@@ -125,8 +110,4 @@ export function getWeatherLabel(code: number): string {
 
 export function getWeatherIconKey(code: number): string {
   return weatherIcons[getWeatherCondition(code)];
-}
-
-export function getWeatherBackground(code: number): string {
-  return weatherBackgrounds[getWeatherCondition(code)];
 }

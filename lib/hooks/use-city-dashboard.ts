@@ -8,7 +8,6 @@ import { getAirQualitySeries } from "@/lib/domain/air-quality-series";
 import { getAirQualitySnapshot } from "@/lib/domain/air-quality-snapshot";
 import { calculateComfortScore } from "@/lib/domain/comfort-score";
 import { calculateOutdoorRisk } from "@/lib/domain/outdoor-risk";
-import { temperatureToColor } from "@/lib/utils/formatting";
 import type { City } from "@/lib/constants/cities";
 
 export function useCityDashboard(city: City) {
@@ -53,8 +52,6 @@ export function useCityDashboard(city: City) {
     [airQuery.data],
   );
 
-  const bgColor = temperatureToColor(weatherView?.snapshot.temperature ?? 20);
-
   return {
     weatherQuery,
     airQuery,
@@ -63,6 +60,5 @@ export function useCityDashboard(city: City) {
     comfortScore,
     outdoorRiskLevel,
     airSeries,
-    bgColor,
   };
 }
