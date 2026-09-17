@@ -2,7 +2,13 @@
 
 [← README に戻る](../README.md)
 
-Related: [技術仕様書](technical-specifications.md) for the directory layout and the layer each rule applies to.
+This file is the single source of truth for how code is written in this repository.
+
+The following are owned elsewhere and are not repeated here.
+
+- Directory layout and the layer each rule applies to: [技術仕様書](technical-specifications.md)
+- Colors, type, spacing and motion: [デザインシステム](../DESIGN.md)
+- Commands and the change workflow: [開発手順](development.md)
 
 ## TypeScript
 

@@ -7,7 +7,7 @@
 
 本番URL: https://city-observatory.vercel.app/
 
-## 📱 画面
+## できること
 
 | 画面 | パス       | 内容                                    |
 | ---- | ---------- | --------------------------------------- |
@@ -15,9 +15,10 @@
 | 比較 | `/compare` | 2都市の観測値を差の列つきで並べた表     |
 
 対象は東京・大阪・名古屋・札幌・福岡・那覇の6都市。
-機能の詳細は[要件定義書](docs/requirements.md)にある。
 
-## 🗺 システム構成
+何を作るか、何を作らないかは[要件定義書](docs/requirements.md)が正典。
+
+## 設計
 
 バックエンドを持たない。外部 API はブラウザから直接呼ぶ。
 
@@ -31,13 +32,15 @@ flowchart LR
 
 API キーが `NEXT_PUBLIC_` で始まるのはこのため。キーは MapTiler 側の Allowed HTTP Origins で保護する。
 
-## 🛠 技術スタック
+層の責務と、層をまたぐデータの流れは[技術仕様書](docs/technical-specifications.md)が正典。
+
+## 技術スタック
 
 Next.js 16（App Router）/ React 19 / TypeScript / Tailwind CSS v4 / TanStack Query / MapLibre GL / Recharts / Zod / Vitest / Playwright
 
-バージョンを含む全量と構成は[技術仕様書](docs/technical-specifications.md)にある。
+バージョンを含む全量は[技術仕様書](docs/technical-specifications.md)が正典。
 
-## 📦 セットアップ
+## セットアップ
 
 ### 前提
 
@@ -60,59 +63,25 @@ pnpm dev
 
 http://localhost:3000 で起動する。
 
-MapTiler と OpenWeatherMap の API キーが必要になる。取得先は [`.env.example`](.env.example) に書いてある。
+MapTiler と OpenWeatherMap の API キーが必要になる。必要な変数と取得先は [`.env.example`](.env.example) が正典。
 
-### コマンド
+日々叩くコマンドと、変更を出すまでの手順は[開発手順](docs/development.md)にある。
 
-```bash
-pnpm dev         # 開発サーバーを起動
-pnpm build       # プロダクションビルド
-pnpm start       # プロダクションサーバーを起動
-pnpm test        # Vitest でユニットテストを実行
-pnpm test:e2e    # Playwright で画面を確認
-pnpm typecheck   # 型チェック
-pnpm lint        # ESLint
-pnpm lint:fix    # ESLint の自動修正
-pnpm format      # Prettier の書式チェック
-pnpm format:fix  # Prettier の自動整形
-```
+## ドキュメント
 
-## 📚 ドキュメント
-
-- [要件定義書](docs/requirements.md) - 機能要件・非機能要件・スコープ外。何を作ったのか全体像から知りたいときに最初に読む
-- [技術仕様書](docs/technical-specifications.md) - 技術スタック・ディレクトリ構成・データの流れ・デプロイ。構成を変えるときに読む
-- [API 仕様書](docs/api-specifications.md) - 外部 API の呼び出し方・エラー対応・クレジット表記。データ取得まわりを触るときに読む
-- [デザインシステム](DESIGN.md) - 配色・書体・余白・動きの規約。画面を作る・直すときに読む
-- [コーディング規約](docs/coding-guidelines.md) - TypeScript・React・命名の約束事。コードを書く前に読む
-- [拡張機能仕様書](docs/enhancement-specifications.md) - 実装済み機能の詳細と未実装の候補。どこまでできているか知りたいときに読む
+| 文書                                                 | いつ読むか                                           |
+| ---------------------------------------------------- | ---------------------------------------------------- |
+| [要件定義書](docs/requirements.md)                   | 何を作ったのか、どこまでが対象外かを知りたいとき     |
+| [技術仕様書](docs/technical-specifications.md)       | 構成・データの流れ・デプロイを変えるとき             |
+| [API 仕様書](docs/api-specifications.md)             | 外部 API の呼び出しや失敗時の扱いを触るとき          |
+| [デザインシステム](DESIGN.md)                        | 画面を作るとき・直すとき                             |
+| [コーディング規約](docs/coding-guidelines.md)        | コードを書く前                                       |
+| [開発手順](docs/development.md)                      | コマンドを叩くとき・変更を出すとき                   |
+| [拡張機能仕様書](docs/enhancement-specifications.md) | どこまでできているか、次に何を足せるかを知りたいとき |
 
 環境変数は [`.env.example`](.env.example) が正典。
 
-## 🔄 開発フロー（Issue駆動）
-
-1. Issue を立てる
-2. `main` から `issue-<number>-<slug>` でブランチを切る（例: `issue-10-map-view`）
-3. 実装してコミットし、push する
-4. PR を出す。タイトルは `Issue #<number>: <短いタイトル>`、本文に `Closes #<number>` を含める
-5. マージ後、`main` を更新して次の Issue に移る
-
-PR の本文は [PR テンプレート](.github/pull_request_template.md)を使う。
-
-### 例外
-
-`.gitignore` と `.prettierignore` の変更だけは、Issue と PR を通さず `main` へ直接コミットしてよい。Git が追跡する範囲と整形の対象範囲を変えるだけで、アプリの動作にもドキュメントの内容にも影響しないため。
-
-`.env.example` と `.husky/` 配下はこの例外に含めない。`.env.example` は環境変数の正典として [API 仕様書](docs/api-specifications.md)から参照されるドキュメントであり、`.husky/` 配下はコミットとプッシュのたびに走る処理そのものなので、どちらも Issue 駆動で扱う。
-
-```bash
-# Issue からブランチを作る
-gh issue develop <number> -b issue-<number>-<slug>
-
-# PR を作る
-gh pr create -t "Issue #<number>: <title>" -b "Closes #<number>"
-```
-
-## 🙏 謝辞
+## 謝辞
 
 - [Open-Meteo](https://open-meteo.com/) - 天気・大気質データ
 - [MapTiler](https://www.maptiler.com/) - 地図タイル
