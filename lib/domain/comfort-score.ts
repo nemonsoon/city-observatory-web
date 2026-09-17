@@ -19,8 +19,8 @@ export function calculateComfortScore(input: ComfortScoreInput) {
   const windPenalty = Math.max(input.windSpeed - 3, 0) * 4;
   // 降水確率は外出判断への影響が大きいため緩めの重みで反映
   const rainPenalty = input.precipitationProbability * 0.15;
-  // PM2.5は一般的な良好域(12)を超えた分のみ罰点化
-  const airPenalty = Math.max(input.pm25 - 12, 0) * 0.6;
+  // PM2.5は環境基準の年平均値(15)を超えた分のみ罰点化
+  const airPenalty = Math.max(input.pm25 - 15, 0) * 0.6;
 
   const score =
     100 -

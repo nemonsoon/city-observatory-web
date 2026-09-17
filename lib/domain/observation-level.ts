@@ -31,11 +31,11 @@ export function uvLevel(index: number): ObservationLevel {
   return 5;
 }
 
-/** PM2.5。米国環境保護庁の AQI 区分の境界値に合わせる */
+/** PM2.5。環境省の環境基準と注意喚起の暫定指針値に合わせる（`air-quality-label.ts` と同じ境界） */
 export function pm25Level(pm25: number): ObservationLevel {
-  if (pm25 <= 12) return 1;
-  if (pm25 <= 35.4) return 3;
-  if (pm25 <= 55.4) return 4;
+  if (pm25 <= 15) return 1;
+  if (pm25 <= 35) return 3;
+  if (pm25 <= 70) return 4;
   return 5;
 }
 
