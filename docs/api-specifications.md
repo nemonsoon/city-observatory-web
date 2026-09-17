@@ -10,44 +10,7 @@ API キーの設定は [`.env.example`](../.env.example) が正典。
 
 ---
 
-## 1. Open-Meteo Geocoding API
-
-- **エンドポイント**: `GET https://geocoding-api.open-meteo.com/v1/search`
-- **認証**: 不要（非商用利用）
-- **ドキュメント**: https://open-meteo.com/en/docs/geocoding-api
-- **実装**: `lib/api/geocoding.ts`
-
-### パラメータ
-
-| パラメータ | 型     | 必須 | 説明                               | デフォルト |
-| ---------- | ------ | ---- | ---------------------------------- | ---------- |
-| `name`     | string | ✓    | 検索する都市名（日本語・英語対応） | -          |
-| `count`    | number | -    | 返却する候補数（最大 100）         | 10         |
-| `language` | string | -    | 表示言語                           | `en`       |
-| `format`   | string | -    | レスポンス形式                     | `json`     |
-
-### レスポンス例
-
-```json
-{
-  "results": [
-    {
-      "id": 1850144,
-      "name": "Tokyo",
-      "latitude": 35.6895,
-      "longitude": 139.69171,
-      "elevation": 40.0,
-      "timezone": "Asia/Tokyo",
-      "country": "Japan",
-      "country_code": "JP"
-    }
-  ]
-}
-```
-
----
-
-## 2. Open-Meteo Weather Forecast API
+## 1. Open-Meteo Weather Forecast API
 
 - **エンドポイント**: `GET https://api.open-meteo.com/v1/forecast`
 - **認証**: 不要（非商用利用、商用は有料）
@@ -75,7 +38,7 @@ API キーの設定は [`.env.example`](../.env.example) が正典。
 
 ---
 
-## 3. Open-Meteo Air Quality API
+## 2. Open-Meteo Air Quality API
 
 - **エンドポイント**: `GET https://air-quality-api.open-meteo.com/v1/air-quality`
 - **認証**: 不要
@@ -111,7 +74,7 @@ API キーの設定は [`.env.example`](../.env.example) が正典。
 
 ---
 
-## 4. MapTiler Vector Tiles
+## 3. MapTiler Vector Tiles
 
 - **ベース URL**: `https://api.maptiler.com`
 - **認証**: API キー必須（`NEXT_PUBLIC_MAPTILER_KEY`）
@@ -139,14 +102,14 @@ MapTiler Dashboard で **Allowed HTTP Origins** を設定:
 
 ---
 
-## 5. OpenWeatherMap Precipitation Tiles
+## 4. OpenWeatherMap Precipitation Tiles
 
 - **タイル URL**: `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid={KEY}`
 - **認証**: API キー必須（`NEXT_PUBLIC_OPENWEATHER_KEY`）
 
 ---
 
-## 6. エラーハンドリング
+## 5. エラーハンドリング
 
 失敗はすべて `lib/api/errors.ts` の `APIError` に包んでから TanStack Query へ渡す。`Response` から投げられた場合は HTTP ステータスと `HTTP_<status>` 形式のコードを保持する。
 
@@ -170,7 +133,7 @@ MapTiler Dashboard で **Allowed HTTP Origins** を設定:
 
 ---
 
-## 7. 利用規約とクレジット表記
+## 6. 利用規約とクレジット表記
 
 各サービスの規約上、次の表記が必須になる。
 
