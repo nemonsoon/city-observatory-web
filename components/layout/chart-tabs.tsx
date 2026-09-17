@@ -63,7 +63,6 @@ export function ChartTabs({
       {activeTab === "temp" ? (
         weatherHourly ? (
           <WeatherChart
-            title="気温の推移"
             range="24h"
             data={weatherHourly}
             dataKey="temperature_2m"
@@ -75,7 +74,6 @@ export function ChartTabs({
         )
       ) : airSeries && !isAirFetching ? (
         <AQChart
-          title="PM2.5 推移"
           data={airSeries}
           dataKey="pm2_5"
           range="24h"

@@ -40,9 +40,10 @@ export function ObservationChart({
   return (
     <div className="h-65 min-h-60 min-w-0">
       <ResponsiveContainer width="100%" height="100%">
+        {/* right は最後の目盛りラベルが見切れない幅を確保する */}
         <LineChart
           data={data}
-          margin={{ top: 4, right: 4, bottom: 0, left: 0 }}
+          margin={{ top: 4, right: 20, bottom: 0, left: 0 }}
         >
           <CartesianGrid
             vertical={false}
