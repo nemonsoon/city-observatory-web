@@ -127,7 +127,7 @@
 
 ## 6. 外部 API
 
-Open-Meteo（都市検索・天気予報・大気質予報）、MapTiler（地図タイル）、OpenWeatherMap（降水タイル）を使う。
+Open-Meteo（天気予報・大気質予報）、MapTiler（地図タイル）、OpenWeatherMap（降水タイル）を使う。
 
 エンドポイント・パラメータ・レート制限・利用規約は [API 仕様書](api-specifications.md) にある。
 
@@ -147,3 +147,4 @@ Open-Meteo（都市検索・天気予報・大気質予報）、MapTiler（地�
 - 通知
 - 多言語対応
 - PWA
+- 自由入力による都市の検索。対象は 1.2 の固定6都市にとどめる
