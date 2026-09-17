@@ -61,10 +61,7 @@
   --text-note: 0.8125rem;
   --text-note--line-height: 1.5;
 
-  --radius-sm: 0.0625rem;
   --radius-md: 0.125rem;
-  --radius-lg: 0.1875rem;
-  --radius-xl: 0.25rem;
 
   --animate-rule-draw: rule-draw 560ms cubic-bezier(0.2, 0, 0, 1) both;
   --animate-reading-in: reading-in 420ms cubic-bezier(0.2, 0, 0, 1) both;
@@ -205,10 +202,8 @@
   }
 }
 
-/* 上から順に記入されていくように見せる段差。DESIGN.md § 7 */
-.stagger-1 {
-  animation-delay: calc(var(--stagger-step) * 0);
-}
+/* 上から順に記入されていくように見せる段差。DESIGN.md § 7。
+   先頭の欄は遅延を持たないので、段差は2から始まる */
 .stagger-2 {
   animation-delay: calc(var(--stagger-step) * 1);
 }

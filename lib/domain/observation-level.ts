@@ -23,14 +23,6 @@ export const levelBackgroundClass: Record<ObservationLevel, string> = {
   5: "bg-level-5",
 };
 
-/** UV 指数。国際的な区分（0-2 / 3-5 / 6-7 / 8-10 / 11+）に合わせる */
-export function uvLevel(index: number): ObservationLevel {
-  if (index <= 2) return 1;
-  if (index <= 5) return 3;
-  if (index <= 7) return 4;
-  return 5;
-}
-
 /** PM2.5。環境省の環境基準と注意喚起の暫定指針値に合わせる（`air-quality-label.ts` と同じ境界） */
 export function pm25Level(pm25: number): ObservationLevel {
   if (pm25 <= 15) return 1;

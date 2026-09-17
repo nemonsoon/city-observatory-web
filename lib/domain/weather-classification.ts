@@ -103,11 +103,3 @@ export function getWeatherClassification(code: number): WeatherClassification {
     severity: weatherSeverities[condition],
   };
 }
-
-export function getWeatherLabel(code: number): string {
-  return weatherLabels[getWeatherCondition(code)];
-}
-
-export function getWeatherIconKey(code: number): string {
-  return weatherIcons[getWeatherCondition(code)];
-}

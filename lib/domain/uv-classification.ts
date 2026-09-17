@@ -41,7 +41,3 @@ export function getUVClassification(index: number): UVClassification {
     severity: uvSeverities[level],
   };
 }
-
-export function getUVLabel(index: number): string {
-  return uvLabels[classifyUVIndex(index)];
-}
