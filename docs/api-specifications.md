@@ -4,9 +4,15 @@
 
 外部 API のエンドポイント・パラメータ・レスポンス形式と、失敗時の扱い、クレジット表記の義務。
 
-実装は `lib/api/` と `lib/validators/` にある。層をまたぐ呼び出しの流れは [技術仕様書](technical-specifications.md#23-データの流れ) にある。
+このファイルが、外部 API をどう呼び、失敗をどう扱うかの唯一の正典。
 
-API キーの設定は [`.env.example`](../.env.example) が正典。
+実装は `lib/api/` と `lib/validators/` にある。
+
+関連する正典は次のとおり。ここには複製しない。
+
+- 層をまたぐ呼び出しの流れ: [技術仕様書](technical-specifications.md#23-データの流れ)
+- API キーの設定: [`.env.example`](../.env.example)
+- 使えるパラメータを足す判断: [拡張機能仕様書](enhancement-specifications.md)
 
 ---
 
