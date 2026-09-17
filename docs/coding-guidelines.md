@@ -2,20 +2,25 @@
 
 [← README に戻る](../README.md)
 
+Related: [技術仕様書](technical-specifications.md) for the directory layout and the layer each rule applies to.
+
 ## TypeScript
 
 - Type definitions must use `type`, not `interface`.
 - Top-level functions should use `function` declarations.
 - Non top-level functions should use arrow functions.
 - Prefer `undefined` over `null`.
+- `any` is prohibited. Where it cannot be avoided, keep it to the smallest possible scope and add a comment explaining why.
 
 ## React and State Management
 
+- Server Components are the default. Mark a Client Component with `"use client"` only when it needs browser APIs, state, or effects.
 - Use `useState` for local state by default.
 - Use `jotai` only when global state is unavoidable.
 - `useContext` is prohibited.
 - Use `useCallback`, `useMemo`, and `memo` when needed to avoid unnecessary re-renders.
   - If memoization is unnecessary (e.g., RSC), do not add it.
+- Avoid `useRef` and `useEffect`. Reach for them only when an external library or direct DOM access leaves no alternative, such as MapLibre, and keep them inside a Client Component.
 
 ## Comments
 
@@ -25,6 +30,7 @@
 ## Architecture
 
 - Build with an FSD (Feature-Sliced Design) mindset.
+- One file, one responsibility. Split oversized components and do-everything hooks.
 - Barrel files are prohibited.
 
 ## Naming
