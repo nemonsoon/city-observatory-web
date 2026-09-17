@@ -44,16 +44,6 @@ next-env.d.ts
 # vscode
 .vscode
 
-# AI
-AGENTS.md
-CLAUDE.md
-.claude
-
-# internal working notes (kept locally, not published)
-docs/development-checklist.md
-docs/ui-overhaul-plan.md
-docs/handoff.md
-
 # playwright
 /e2e/.output/
 /playwright-report/
