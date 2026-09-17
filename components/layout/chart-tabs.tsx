@@ -37,16 +37,22 @@ export function ChartTabs({
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-1 rounded-lg bg-muted/20 p-1">
+      <div
+        className="mb-grid flex w-fit border border-border"
+        role="tablist"
+        aria-label="表示する観測値"
+      >
         {tabs.map((tab) => (
           <button
             key={tab.key}
             type="button"
+            role="tab"
+            aria-selected={activeTab === tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={cn(
-              "rounded-md px-4 py-1.5 text-xs font-medium uppercase tracking-[0.2px] transition-all duration-200",
+              "border-l border-border px-3 py-1 text-note transition-colors first:border-l-0",
               activeTab === tab.key
-                ? "bg-foreground text-background shadow-sm"
+                ? "bg-foreground text-background"
                 : "text-muted-foreground hover:text-foreground",
             )}
           >
@@ -65,7 +71,7 @@ export function ChartTabs({
             utcOffsetSeconds={weatherUtcOffset}
           />
         ) : (
-          <div className="h-[260px] w-full animate-pulse rounded-2xl bg-muted/30" />
+          <div className="h-65 w-full animate-pulse bg-muted" />
         )
       ) : airSeries && !isAirFetching ? (
         <AQChart
@@ -77,7 +83,7 @@ export function ChartTabs({
           utcOffsetSeconds={airUtcOffset}
         />
       ) : (
-        <div className="h-[260px] w-full animate-pulse rounded-2xl bg-muted/30" />
+        <div className="h-65 w-full animate-pulse bg-muted" />
       )}
     </div>
   );
