@@ -96,7 +96,7 @@ pnpm format:fix  # Prettier の自動整形
 4. PR を出す。タイトルは `Issue #<number>: <短いタイトル>`、本文に `Closes #<number>` を含める
 5. マージ後、`main` を更新して次の Issue に移る
 
-PR の本文は `.github/pull_request_template.md` を使う。
+PR の本文は [PR テンプレート](.github/pull_request_template.md)を使う。
 
 ```bash
 # Issue からブランチを作る
