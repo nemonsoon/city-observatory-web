@@ -44,7 +44,6 @@
 | -------------- | ---------- | ---------------------------- |
 | TanStack Query | ^5.102.8   | サーバー状態管理・キャッシュ |
 | jotai          | ^2.20.3    | グローバル状態（最小限）     |
-| nuqs           | ^2.10.1    | URL クエリパラメータ同期     |
 | zod            | ^4.5.4     | スキーマバリデーション       |
 
 ### 1.4 地図・可視化
@@ -87,9 +86,6 @@ city-observatory-web/
 │   ├── air-quality/
 │   │   ├── model/use-air-quality-data.ts
 │   │   └── ui/air-quality-card.tsx, aq-chart.tsx, aq-chart-client.tsx
-│   ├── city-search/
-│   │   ├── model/use-city-search.ts
-│   │   └── ui/city-search-input.tsx, city-suggestions.tsx
 │   ├── derived-metrics/
 │   │   └── ui/comfort-summary-card.tsx, outdoor-risk-card.tsx
 │   ├── map/
@@ -108,7 +104,7 @@ city-observatory-web/
 │   └── theme-provider.tsx
 │
 ├── lib/                          # 共有ロジック
-│   ├── api/                      # weather, air-quality, geocoding, errors
+│   ├── api/                      # weather, air-quality, errors
 │   ├── domain/                   # 純粋関数（comfort-score, observation-level, sun-path 等）
 │   ├── hooks/use-city-dashboard.ts  # 1都市分の観測値をまとめて取り出す
 │   ├── types/                    # 共有型定義
@@ -162,7 +158,6 @@ Validator を通す理由は、外部 API の応答が想定と違う形で返�
 | データ種別 | 定義場所                          | staleTime | gcTime | 理由                                |
 | ---------- | --------------------------------- | --------- | ------ | ----------------------------------- |
 | 既定値     | `app/providers.tsx`               | 5 分      | 10 分  | 個別に指定しないクエリに適用        |
-| 都市検索   | `features/city-search/model/`     | 30 分     | 60 分  | 都市の位置は変化しない              |
 | 天気予報   | `features/weather/model/`         | 15 分     | 既定   | 更新頻度が高い                      |
 | 大気質予報 | `features/air-quality/model/`     | 15 分     | 既定   | 更新頻度が高い                      |
 | 派生指標   | `lib/hooks/use-city-dashboard.ts` | —         | —      | 取得せず `useMemo` で計算結果を保持 |
