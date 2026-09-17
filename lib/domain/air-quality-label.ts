@@ -1,10 +1,11 @@
 export type AirQualityLabel = "good" | "moderate" | "unhealthy" | "hazardous";
 
-// PM2.5 の24時間平均における一般的なブレークポイントを目安にした簡易区分
+// 環境省の環境基準（年平均 15・日平均 35）と注意喚起の暫定指針値（日平均 70 超）を境界に使う。
+// 日本には多段階の公的な区分がないため、公的な数値3つを4段階に割り当てた簡易区分
 export function classifyAirQualityLabel(pm25: number): AirQualityLabel {
-  if (pm25 <= 12) return "good";
-  if (pm25 <= 35.4) return "moderate";
-  if (pm25 <= 55.4) return "unhealthy";
+  if (pm25 <= 15) return "good";
+  if (pm25 <= 35) return "moderate";
+  if (pm25 <= 70) return "unhealthy";
   return "hazardous";
 }
 
