@@ -16,7 +16,7 @@ export function ExternalLink({
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2 text-sm text-foreground/80 transition-colors hover:text-foreground"
+      className="flex items-center gap-2 text-note text-muted-foreground transition-colors hover:text-foreground"
     >
       <ExternalLinkIcon size={iconSize} className="shrink-0" />
       <span>{children}</span>
