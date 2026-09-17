@@ -2,15 +2,10 @@
 
 import { useMemo } from "react";
 import {
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+  ObservationChart,
+  type ObservationPoint,
+} from "@/components/ui/observation-chart";
 import type { WeatherDaily, WeatherHourly } from "@/lib/types/weather";
-import { cn } from "@/lib/utils";
 import { toUtcDateFromLocalTime } from "@/lib/utils/timezone";
 
 type HourlyKey =
@@ -44,11 +39,6 @@ export type WeatherChartProps =
       dataKey: DailyKey;
     });
 
-type ChartPoint = {
-  time: string;
-  value: number;
-};
-
 function formatTimeLabel(
   value: string,
   range: "24h" | "7d",
@@ -79,7 +69,7 @@ export function WeatherChart({
   utcOffsetSeconds,
   onRangeChange,
 }: WeatherChartProps) {
-  const chartData = useMemo<ChartPoint[]>(() => {
+  const chartData = useMemo<ObservationPoint[]>(() => {
     const times = data.time;
     const values =
       range === "24h"
@@ -93,79 +83,32 @@ export function WeatherChart({
   }, [data, dataKey, range, timeZone, utcOffsetSeconds]);
 
   return (
-    <div>
-      <div className="flex items-center justify-between">
-        <div className="text-xs font-medium uppercase tracking-[0.2px] text-muted-foreground">
-          {title ?? "天気チャート"}
-        </div>
-        {onRangeChange && (
-          <div className="flex items-center gap-1 rounded-md bg-muted/30 p-1 text-xs">
+    <div className="flex flex-col gap-3">
+      <div className="flex items-baseline justify-between gap-grid">
+        <h3 className="font-display text-eyebrow uppercase text-muted-foreground">
+          {title ?? "気温"}
+        </h3>
+        {onRangeChange ? (
+          <div className="flex border border-border">
             {(["24h", "7d"] as const).map((value) => (
               <button
                 key={value}
                 type="button"
                 onClick={() => onRangeChange(value)}
-                className={cn(
-                  "rounded-md px-3 py-1 font-medium uppercase tracking-[0.2px] transition",
+                aria-pressed={range === value}
+                className={
                   range === value
-                    ? "bg-foreground text-background shadow"
-                    : "text-muted-foreground",
-                )}
+                    ? "border-l border-border bg-foreground px-2 py-0.5 text-note text-background first:border-l-0"
+                    : "border-l border-border px-2 py-0.5 text-note text-muted-foreground transition-colors first:border-l-0 hover:text-foreground"
+                }
               >
                 {value}
               </button>
             ))}
           </div>
-        )}
+        ) : null}
       </div>
-      <div className="mt-4 h-[260px] min-h-[240px] min-w-0">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
-            <XAxis
-              dataKey="time"
-              tickLine={false}
-              axisLine={false}
-              stroke="var(--muted-foreground)"
-              tick={{
-                fill: "var(--muted-foreground)",
-                fontSize: 12,
-                fontFamily: "var(--font-geist-mono)",
-              }}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              width={32}
-              stroke="var(--muted-foreground)"
-              tick={{
-                fill: "var(--muted-foreground)",
-                fontSize: 12,
-                fontFamily: "var(--font-geist-mono)",
-              }}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor:
-                  "color-mix(in oklch, var(--background) 50%, transparent)",
-                border: "none",
-                borderRadius: "8px",
-                boxShadow:
-                  "0px 0px 0px 1px color-mix(in oklch, var(--foreground) 10%, transparent), 0px 2px 4px color-mix(in oklch, var(--foreground) 4%, transparent)",
-                backdropFilter: "blur(40px)",
-              }}
-              labelStyle={{ color: "var(--foreground)" }}
-            />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke="var(--chart-1)"
-              strokeWidth={3}
-              dot={false}
-              activeDot={{ r: 6, fill: "var(--chart-1)" }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      <ObservationChart data={chartData} series="chart-1" valueLabel="気温" />
     </div>
   );
 }

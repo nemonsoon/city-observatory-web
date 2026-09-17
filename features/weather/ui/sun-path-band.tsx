@@ -1,3 +1,5 @@
+import { Sunrise, Sunset } from "lucide-react";
+
 type SunPathBandProps = {
   sunrise: string;
   sunset: string;
@@ -14,51 +16,46 @@ export function SunPathBand({
   const pct = Math.min(Math.max(progress * 100, 0), 100);
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <span>☀</span>
-        <span className="font-mono [font-feature-settings:'tnum']">
-          {sunrise}
+    <div className="flex flex-col gap-3">
+      <div className="flex items-baseline justify-between gap-grid">
+        <span className="font-display text-eyebrow uppercase text-muted-foreground">
+          日照
+        </span>
+        <span className="text-note text-muted-foreground">
+          {phaseLabel}・経過{" "}
+          <span className="font-mono text-foreground">{Math.round(pct)}%</span>
         </span>
       </div>
 
-      <div className="relative flex-1">
-        <div className="h-1.5 w-full rounded-full bg-muted/30">
+      <div className="flex items-center gap-3">
+        <span className="flex shrink-0 items-center gap-1.5 text-muted-foreground">
+          <Sunrise className="size-3.5" aria-hidden />
+          <span className="font-mono text-note text-foreground">{sunrise}</span>
+        </span>
+
+        <div className="relative h-4 flex-1">
+          {/* 目盛り線。日の出から日の入りまでを4等分する */}
+          <div className="absolute inset-x-0 bottom-0 h-px bg-border" />
+          <div className="absolute inset-x-0 bottom-0 flex justify-between">
+            {[0, 1, 2, 3, 4].map((tick) => (
+              <span key={tick} className="h-1.5 w-px bg-border" />
+            ))}
+          </div>
           <div
-            className="h-1.5 rounded-full bg-foreground/40 transition-all duration-700"
+            className="absolute bottom-0 h-px bg-foreground transition-all duration-500"
             style={{ width: `${pct}%` }}
           />
-        </div>
-        <div
-          className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-700"
-          style={{ left: `${pct}%` }}
-        >
-          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-foreground/90 text-[10px] text-background shadow-sm">
-            ☀
+          <div
+            className="absolute bottom-0 -translate-x-1/2 transition-all duration-500"
+            style={{ left: `${pct}%` }}
+          >
+            <span className="block size-2 -translate-y-1/2 rotate-45 bg-foreground" />
           </div>
         </div>
-      </div>
 
-      <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        <span className="font-mono [font-feature-settings:'tnum']">
-          {sunset}
-        </span>
-        <span>☽</span>
-      </div>
-
-      <div className="hidden items-center gap-2 sm:flex">
-        <span className="font-mono text-xs text-muted-foreground [font-feature-settings:'tnum']">
-          {Math.round(pct)}%
-        </span>
-        <span
-          className="rounded-full px-2 py-0.5 text-xs font-medium uppercase tracking-[0.2px]"
-          style={{
-            backgroundColor:
-              "color-mix(in oklch, oklch(0.80 0.16 85) 15%, transparent)",
-            color: "oklch(0.80 0.16 85)",
-          }}
-        >
-          {phaseLabel}
+        <span className="flex shrink-0 items-center gap-1.5 text-muted-foreground">
+          <span className="font-mono text-note text-foreground">{sunset}</span>
+          <Sunset className="size-3.5" aria-hidden />
         </span>
       </div>
     </div>

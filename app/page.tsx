@@ -2,14 +2,19 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { MapView } from "@/features/map/ui/map-view";
 import { MapOverlayToggle } from "@/features/map/ui/map-overlay-toggle";
 import { UVCard } from "@/features/weather/ui/uv-card";
 import { WindCard } from "@/features/weather/ui/wind-card";
 import { SunPathBand } from "@/features/weather/ui/sun-path-band";
+import { AirQualityCard } from "@/features/air-quality/ui/air-quality-card";
 import { ComfortSummaryCard } from "@/features/derived-metrics/ui/comfort-summary-card";
-import { GlassCard } from "@/components/ui/glass-card";
-import { MeshGradientBackground } from "@/components/ui/mesh-gradient-background";
+import { OutdoorRiskCard } from "@/features/derived-metrics/ui/outdoor-risk-card";
+import { GridField } from "@/components/ui/grid-field";
+import { Panel } from "@/components/ui/panel";
+import { Rule } from "@/components/ui/rule";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { HeroSection } from "@/components/layout/hero-section";
 import { ChartTabs } from "@/components/layout/chart-tabs";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -36,51 +41,61 @@ export default function Home() {
     comfortScore,
     outdoorRiskLevel,
     airSeries,
-    bgColor,
   } = useCityDashboard(activeCity);
 
-  return (
-    <div className="relative min-h-screen overflow-hidden">
-      <MeshGradientBackground color={bgColor} />
+  const isWeatherLoading = weatherQuery.isLoading;
+  const isAirLoading = airQuery.isLoading;
 
-      <div className="mx-auto min-h-screen w-full px-6 py-8 lg:px-12 lg:py-12">
-        <header className="animate-card-in mb-10">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="text-xs font-medium uppercase tracking-[0.2px] text-muted-foreground">
-              City Observatory
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
+  return (
+    <div className="relative min-h-screen">
+      <GridField />
+
+      <div className="mx-auto flex min-h-screen w-full max-w-sheet flex-col px-grid py-grid md:px-9 lg:px-12">
+        <header className="flex flex-col gap-grid pb-grid md:flex-row md:items-center md:justify-between">
+          <p className="font-display text-eyebrow uppercase">
+            City Observatory
+          </p>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <nav
+              className="flex flex-wrap border border-border"
+              aria-label="観測地点"
+            >
               {cities.map((city) => (
                 <button
                   key={city.id}
                   type="button"
                   onClick={() => setSelectedCityId(city.id)}
+                  aria-pressed={selectedCityId === city.id}
                   className={cn(
-                    "rounded-full px-4 py-1.5 text-sm font-medium shadow-[0px_0px_0px_1px_oklch(from_var(--foreground)_l_c_h/20%)] backdrop-blur-[16px] transition-all duration-300 hover:scale-105",
+                    "border-l border-border px-3 py-1.5 text-note transition-colors first:border-l-0",
                     selectedCityId === city.id
-                      ? "bg-foreground text-background shadow-[0px_0px_0px_1px_transparent]"
-                      : "bg-background/50 text-muted-foreground hover:bg-background/60 hover:shadow-[0px_0px_0px_1px_oklch(from_var(--foreground)_l_c_h/30%),0px_4px_12px_oklch(from_var(--foreground)_l_c_h/8%)]",
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {city.label}
                 </button>
               ))}
-              <span className="mx-1 h-4 w-px bg-foreground/15" />
-              <Link
-                href="/compare"
-                className="rounded-full bg-background/50 px-4 py-1.5 text-sm font-medium text-muted-foreground shadow-[0px_0px_0px_1px_oklch(from_var(--foreground)_l_c_h/20%)] backdrop-blur-[16px] transition-all duration-300 hover:scale-105 hover:bg-background/60"
-              >
-                比較 →
-              </Link>
-            </div>
+            </nav>
+
+            <Link
+              href="/compare"
+              className="flex items-center gap-1.5 border border-border px-3 py-1.5 text-note text-muted-foreground transition-colors hover:text-foreground"
+            >
+              2都市を比べる
+              <ArrowRight className="size-3.5" aria-hidden />
+            </Link>
+
+            <ThemeToggle />
           </div>
         </header>
 
-        <section
-          className="animate-card-in mb-10"
-          style={{ animationDelay: "100ms" }}
-        >
+        <Rule weight="heavy" />
+
+        <section className="py-grid">
           <HeroSection
+            station={activeCity}
             snapshot={{
               temperature: weatherView?.snapshot.temperature ?? 0,
               apparentTemperature:
@@ -92,52 +107,44 @@ export default function Home() {
             }}
             weatherClassification={weatherView?.weatherClassification}
             timeZone={activeCity.timezone}
-            isLoading={weatherQuery.isLoading}
+            isLoading={isWeatherLoading}
           />
         </section>
 
-        <section
-          className="animate-card-in mb-8 grid grid-cols-2 gap-4 lg:grid-cols-3"
-          style={{ animationDelay: "200ms" }}
-        >
-          <GlassCard className="min-h-[140px]">
-            <UVCard
-              uvIndex={weatherView?.snapshot.uvIndex ?? 0}
-              uvIndexMax={weatherView?.uvIndexMax}
-              label={weatherView?.uvClassification.label ?? "不明"}
-              color={weatherView?.uvClassification.color ?? "hsl(0, 0%, 60%)"}
-              isLoading={weatherQuery.isLoading}
-              compact
-            />
-          </GlassCard>
+        <Rule className="stagger-3" />
 
-          <GlassCard className="min-h-[140px]">
-            <ComfortSummaryCard
-              comfortScore={comfortScore}
-              outdoorRiskLevel={outdoorRiskLevel}
-              pm25={airSnapshot?.pm25 ?? 0}
-              isLoading={weatherQuery.isLoading || airQuery.isLoading}
-              compact
-            />
-          </GlassCard>
-
-          <GlassCard className="min-h-[140px]">
-            <WindCard
-              windSpeed={weatherView?.snapshot.windSpeed ?? 0}
-              windDirection={weatherView?.windDirectionRotation ?? 0}
-              directionLabel={weatherView?.windDirectionLabel ?? "不明"}
-              isLoading={weatherQuery.isLoading}
-              compact
-            />
-          </GlassCard>
+        <section className="animate-reading-in stagger-4 grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-3 lg:grid-cols-5 lg:divide-y-0">
+          <UVCard
+            uvIndex={weatherView?.snapshot.uvIndex ?? 0}
+            label={weatherView?.uvClassification.label ?? "不明"}
+            severity={weatherView?.uvClassification.severity ?? 1}
+            isLoading={isWeatherLoading}
+          />
+          <ComfortSummaryCard
+            comfortScore={comfortScore}
+            isLoading={isWeatherLoading || isAirLoading}
+          />
+          <OutdoorRiskCard
+            risk={outdoorRiskLevel}
+            isLoading={isWeatherLoading || isAirLoading}
+          />
+          <WindCard
+            windSpeed={weatherView?.snapshot.windSpeed ?? 0}
+            windDirection={weatherView?.windDirectionRotation ?? 0}
+            directionLabel={weatherView?.windDirectionLabel ?? "不明"}
+            isLoading={isWeatherLoading}
+          />
+          <AirQualityCard
+            pm25={airSnapshot?.pm25 ?? 0}
+            isLoading={isAirLoading}
+          />
         </section>
 
+        <Rule className="stagger-5" />
+
         {weatherView?.sunriseAt && weatherView.sunsetAt ? (
-          <section
-            className="animate-card-in mb-8"
-            style={{ animationDelay: "300ms" }}
-          >
-            <GlassCard className="px-6 py-3" hoverable={false}>
+          <>
+            <section className="animate-reading-in stagger-5 py-grid">
               <SunPathBand
                 sunrise={weatherView.sunriseAt.toLocaleTimeString("ja-JP", {
                   hour: "2-digit",
@@ -152,15 +159,13 @@ export default function Home() {
                 progress={weatherView.sunProgress}
                 phaseLabel={weatherView.sunPhaseLabel}
               />
-            </GlassCard>
-          </section>
+            </section>
+            <Rule className="stagger-6" />
+          </>
         ) : null}
 
-        <section
-          className="animate-card-in grid gap-6 lg:grid-cols-2"
-          style={{ animationDelay: "400ms" }}
-        >
-          <GlassCard>
+        <section className="animate-reading-in stagger-6 grid gap-grid py-grid lg:grid-cols-2">
+          <Panel label="24時間の推移">
             <ChartTabs
               weatherHourly={weatherQuery.data?.hourly}
               weatherTimeZone={
@@ -172,13 +177,16 @@ export default function Home() {
               airUtcOffset={airQuery.data?.utc_offset_seconds}
               isAirFetching={airQuery.isFetching}
             />
-          </GlassCard>
+          </Panel>
 
-          <GlassCard className="relative overflow-hidden p-4">
-            <div className="absolute left-6 top-6 z-10">
+          <Panel
+            label="観測地点"
+            bodyClassName="p-0"
+            action={
               <MapOverlayToggle value={mapOverlay} onChange={setMapOverlay} />
-            </div>
-            <div className="h-full min-h-[360px]">
+            }
+          >
+            <div className="h-full min-h-90">
               <MapView
                 center={[activeCity.lon, activeCity.lat]}
                 zoom={10}
@@ -192,7 +200,7 @@ export default function Home() {
                 overlay={mapOverlay}
               />
             </div>
-          </GlassCard>
+          </Panel>
         </section>
 
         <SiteFooter />

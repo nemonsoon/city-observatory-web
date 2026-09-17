@@ -47,11 +47,9 @@ export const RealtimeClock = memo(function RealtimeClock({
   const clock = useRealtimeClock(timeZone);
 
   return (
-    <>
-      <div className="text-sm text-muted-foreground">{clock.datePart}</div>
-      <div className="font-mono text-xs text-muted-foreground [font-feature-settings:'tnum']">
-        {clock.timePart}
-      </div>
-    </>
+    <div className="flex items-baseline gap-2 font-mono text-note text-muted-foreground">
+      <span>{clock.datePart}</span>
+      <span className="text-foreground">{clock.timePart}</span>
+    </div>
   );
 });

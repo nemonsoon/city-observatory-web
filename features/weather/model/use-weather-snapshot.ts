@@ -8,7 +8,6 @@ import {
 } from "@/lib/domain/wind-direction";
 import {
   getSunPhase,
-  getSunPhaseBackground,
   getSunPhaseLabel,
   getSunProgress,
 } from "@/lib/domain/sun-path";
@@ -85,7 +84,6 @@ export function useWeatherSnapshot({
         ? getSunProgress(new Date(), sunriseAt, sunsetAt)
         : 0;
     const sunPhaseLabel = getSunPhaseLabel(sunPhase);
-    const sunPhaseBackground = getSunPhaseBackground(sunPhase);
 
     return {
       snapshot,
@@ -97,7 +95,6 @@ export function useWeatherSnapshot({
       sunriseAt,
       sunsetAt,
       sunPhaseLabel,
-      sunPhaseBackground,
       sunProgress,
       timeZone,
     };

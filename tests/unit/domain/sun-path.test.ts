@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
   getSunPhase,
-  getSunPhaseBackground,
   getSunPhaseLabel,
   getSunProgress,
 } from "@/lib/domain/sun-path";
@@ -59,9 +58,11 @@ describe("getSunPhase", () => {
   });
 });
 
-describe("getSunPhaseLabel/background", () => {
-  it("returns label and background for night", () => {
+describe("getSunPhaseLabel", () => {
+  it("returns label for each phase", () => {
     expect(getSunPhaseLabel("night")).toBe("夜");
-    expect(getSunPhaseBackground("night")).toContain("#0f172a");
+    expect(getSunPhaseLabel("dawn")).toBe("朝焼け");
+    expect(getSunPhaseLabel("day")).toBe("日中");
+    expect(getSunPhaseLabel("dusk")).toBe("夕焼け");
   });
 });
