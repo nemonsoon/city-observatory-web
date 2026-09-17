@@ -2,119 +2,118 @@
 
 [← README に戻る](../README.md)
 
-## 1. 概要
+Open-Meteo のパラメータを足すだけで実現できる表示機能について、実装済みのものと今後の候補。
 
-### 1.1 目的
+外部 API のエンドポイントとパラメータの全量は [API 仕様書](api-specifications.md) にある。
 
-既存のOpen-Meteo APIを活用し、**APIパラメータの追加のみ**で実装可能な視覚的インパクトの高い機能を追加する。
+## 1. 方針
 
-### 1.2 方針
+- 新しい API キーやエンドポイントを増やさない。既存 API のパラメータ追加だけで実現する
+- リクエスト数を増やさず、無料枠に収める
+- 一目で状況が伝わる見せ方を優先する
 
-- 既存APIの拡張のみ（新規APIキー不要、新規エンドポイント不要）
-- 無料枠内で実装（リクエスト数増加なし）
-- 一目で状況が伝わる見せ方を重視
+使用するパラメータはすべて Open-Meteo の無料プランで利用でき、天気コードは WMO の標準に準拠している。
 
-### 1.3 APIの確実性
+## 2. 実装済み
 
-Open-Meteo公式ドキュメントで確認済み（https://open-meteo.com/en/docs）。WMO Weather Code標準に準拠。全パラメータが無料プランで利用可能。
+### E1. 風向きと風速
 
----
+| 項目           | 内容                                                              |
+| -------------- | ----------------------------------------------------------------- |
+| ドメイン       | `lib/domain/wind-direction.ts`, `lib/domain/observation-level.ts` |
+| UI             | `features/weather/ui/wind-card.tsx`                               |
+| API パラメータ | `wind_direction_10m`（hourly）                                    |
 
-## 2. 実装済み機能
+方位の目盛りを刻んだ円盤に針を立て、風向きに合わせて回す。風速は5段階に分け、段階の色と文字ラベルを添える。
 
-### E1. 風向き・風速ビジュアライザー [実装済み]
+### E2. 天気コードによるアイコンとラベル
 
-- **ドメインロジック**: `lib/domain/wind-direction.ts`
-- **UI**: `features/weather/ui/wind-card.tsx`
-- **APIパラメータ**: `wind_direction_10m` (hourly)
-- 風向き矢印をアニメーション表示、風速に応じて表現を変化
+| 項目           | 内容                                   |
+| -------------- | -------------------------------------- |
+| ドメイン       | `lib/domain/weather-classification.ts` |
+| UI             | `features/weather/ui/weather-icon.tsx` |
+| API パラメータ | `weathercode`（hourly）                |
 
-### E2. 天気コードによる背景・アイコン変化 [実装済み]
+WMO の天気コードを日本語のラベルと lucide-react のアイコンに対応させる。
 
-- **ドメインロジック**: `lib/domain/weather-classification.ts`
-- **UI**: `features/weather/ui/weather-icon.tsx`
-- **APIパラメータ**: `weathercode` (hourly)
-- WMO天気コードに基づくアイコン・ラベル表示
-
-**WMO天気コード対応表:**
-
-| コード | 説明          | 日本語表示 |
+| コード | 内容          | 日本語表示 |
 | ------ | ------------- | ---------- |
 | 0      | Clear sky     | 快晴       |
 | 1      | Mainly clear  | 晴れ       |
 | 2      | Partly cloudy | 薄曇り     |
 | 3      | Overcast      | 曇り       |
 | 45, 48 | Fog           | 霧         |
-| 51-55  | Drizzle       | 霧雨〜小雨 |
-| 61-65  | Rain          | 雨〜大雨   |
-| 71-75  | Snowfall      | 雪〜大雪   |
-| 80-82  | Rain showers  | にわか雨   |
-| 85-86  | Snow showers  | にわか雪   |
-| 95-99  | Thunderstorm  | 雷雨       |
+| 51–55  | Drizzle       | 霧雨       |
+| 61–65  | Rain          | 雨         |
+| 71–75  | Snowfall      | 雪         |
+| 80–82  | Rain showers  | にわか雨   |
+| 85–86  | Snow showers  | にわか雪   |
+| 95–99  | Thunderstorm  | 雷雨       |
 
-### E3. 日の出/日の入り可視化 [実装済み]
+### E3. 日の出から日の入りまでの経過
 
-- **ドメインロジック**: `lib/domain/sun-path.ts`
-- **UI**: `features/weather/ui/sun-path-card.tsx`
-- **APIパラメータ**: `sunrise`, `sunset` (daily)
-- 太陽の軌道を円弧で表示、現在時刻の太陽位置を計算
+| 項目           | 内容                                    |
+| -------------- | --------------------------------------- |
+| ドメイン       | `lib/domain/sun-path.ts`                |
+| UI             | `features/weather/ui/sun-path-band.tsx` |
+| API パラメータ | `sunrise`, `sunset`（daily）            |
 
-### E4. UV指数カード [実装済み]
+日の出と日の入りを両端に置いた目盛り上で、現在時刻の位置を印で示す。経過の割合と時間帯のラベルを添える。
 
-- **ドメインロジック**: `lib/domain/uv-classification.ts`
-- **UI**: `features/weather/ui/uv-card.tsx`
-- **APIパラメータ**: `uv_index` (hourly), `uv_index_max` (daily)
+### E4. UV 指数
 
-**UV指数の分類:**
+| 項目           | 内容                              |
+| -------------- | --------------------------------- |
+| ドメイン       | `lib/domain/uv-classification.ts` |
+| UI             | `features/weather/ui/uv-card.tsx` |
+| API パラメータ | `uv_index`（hourly）              |
 
-| UV指数 | レベル     | 色       |
-| ------ | ---------- | -------- |
-| 0-2    | 低い       | 緑       |
-| 3-5    | 中程度     | 黄       |
-| 6-7    | 高い       | オレンジ |
-| 8-10   | 非常に高い | 赤       |
-| 11+    | 極端に高い | 紫       |
+国際的な区分に合わせて5つのラベルに分け、[デザインシステム](../DESIGN.md) の Level Scale に対応させる。
 
----
+| UV 指数 | ラベル     | 段階 |
+| ------- | ---------- | ---- |
+| 0–2     | 低い       | 1    |
+| 3–5     | 中程度     | 3    |
+| 6–7     | 高い       | 4    |
+| 8–10    | 非常に高い | 5    |
+| 11 以上 | 極端に高い | 5    |
 
 ## 3. 未実装の拡張候補
 
-### 優先度：中
+### 優先度: 中
 
-#### E5. 降水量の実測値表示
+#### E5. 降水量の実測値
 
-- **APIパラメータ**: `precipitation` (hourly)
-- 降水確率に加え、実際の降水量を表示。24時間累積降水量のグラフ化。
+`precipitation`（hourly）を追加する。降水確率に加えて実際の降水量を出し、24時間の累積をグラフにする。
 
-#### E6. 雲量アニメーション
+#### E6. 気圧の推移
 
-- **APIパラメータ**: `cloud_cover` (hourly)
-- SVG/CSSで雲を描画、雲量%に応じて数を調整。
+`pressure_msl`（hourly）を追加する。気圧の上昇と下降の傾向を折れ線で示す。
 
-#### E7. 気圧変化グラフ
+### 優先度: 低
 
-- **APIパラメータ**: `pressure_msl` (hourly)
-- Rechartsで折れ線グラフ、気圧の上昇/下降傾向を表示。
+#### E7. 視程
 
-### 優先度：低
+`visibility` を追加する。霧の濃さを数値で示す。
 
-#### E8. 視程（霧）の可視化
+#### E8. 降雪量
 
-- **APIパラメータ**: `visibility`
+`snowfall` を追加する。札幌の冬季に意味を持つ。
 
-#### E9. 降雪アニメーション
+## 4. 部品はあるが画面に出ていないもの
 
-- **APIパラメータ**: `snowfall`
+コードは存在するが、どの画面からも呼ばれていない。実装を進めるか、削除するかの判断が要る。
 
----
+| 対象                     | 場所                                           | 状況                                                                 |
+| ------------------------ | ---------------------------------------------- | -------------------------------------------------------------------- |
+| 都市検索                 | `features/city-search/`                        | Geocoding API を叩くフックと入力欄があるが、画面に組み込まれていない |
+| ベストタイムスロット     | `lib/domain/best-time-slots.ts`                | 型 `lib/types/derived-metrics.ts` に枠はあるが、呼び出しがない       |
+| 7日間予報                | `features/weather/ui/weather-chart-client.tsx` | `range="7d"` を受け取れるが、画面からは 24 時間しか渡していない      |
+| PM10・二酸化窒素・オゾン | `lib/types/air-quality.ts`                     | API から取得しているが、画面に出していない                           |
+| URL への状態保持         | `nuqs`（`package.json`）                       | 依存に入っているが、コード中の使用箇所がない                         |
 
-## 4. 制約事項
+## 5. 制約
 
-- 新規API追加は行わない（Open-Meteoパラメータ追加のみ）
-- 3Dアニメーション（Three.js等）は使用しない
-- リアルタイム更新は行わない（15分キャッシュを維持）
-
----
-
-**最終更新**: 2026-04-28
-**バージョン**: 2.0
+- 新しい外部 API を追加しない。Open-Meteo のパラメータ追加だけにとどめる
+- 3D 表現のライブラリを使わない
+- リアルタイム更新を行わない。キャッシュの間隔は [技術仕様書](technical-specifications.md#24-キャッシュ戦略) に従う
