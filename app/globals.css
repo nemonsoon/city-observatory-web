@@ -4,106 +4,143 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-display: var(--font-archivo);
+  --font-sans: var(--font-zen-kaku-gothic-new);
+  --font-mono: var(--font-sometype-mono);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-env-teal: var(--env-teal);
-  --color-env-sky: var(--env-sky);
-  --color-env-amber: var(--env-amber);
-  --color-env-orange: var(--env-orange);
-  --color-env-red: var(--env-red);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-grid: var(--grid);
+  --color-grid-major: var(--grid-major);
+
+  --color-level-1: var(--level-1);
+  --color-level-2: var(--level-2);
+  --color-level-3: var(--level-3);
+  --color-level-4: var(--level-4);
+  --color-level-5: var(--level-5);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* 方眼1マス。余白もグラフの目盛りもこの値を参照する */
+  --spacing-grid: 1.5rem;
+  --spacing-grid-major: 7.5rem;
+
+  --text-observation: 4.5rem;
+  --text-observation--line-height: 0.85;
+  --text-observation--letter-spacing: -0.04em;
+  --text-reading: 2.25rem;
+  --text-reading--line-height: 1;
+  --text-reading--letter-spacing: -0.02em;
+  --text-heading: 1.0625rem;
+  --text-heading--line-height: 1.4;
+  --text-heading--letter-spacing: -0.01em;
+  --text-eyebrow: 0.6875rem;
+  --text-eyebrow--line-height: 1.2;
+  --text-eyebrow--letter-spacing: 0.14em;
+  --text-note: 0.8125rem;
+  --text-note--line-height: 1.5;
+
+  --radius-sm: 0.0625rem;
+  --radius-md: 0.125rem;
+  --radius-lg: 0.1875rem;
+  --radius-xl: 0.25rem;
+
+  --animate-rule-draw: rule-draw 560ms cubic-bezier(0.2, 0, 0, 1) both;
+  --animate-reading-in: reading-in 420ms cubic-bezier(0.2, 0, 0, 1) both;
+
+  --stagger-step: 80ms;
+
+  /* 紙の幅。これ以上広い画面では中央に寄せる */
+  --container-sheet: 90rem;
 }
 
+/* 方眼紙 */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.62 0.21 255);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --env-teal: oklch(0.72 0.14 180);
-  --env-sky: oklch(0.75 0.12 220);
-  --env-amber: oklch(0.8 0.16 85);
-  --env-orange: oklch(0.72 0.19 55);
-  --env-red: oklch(0.62 0.24 25);
+  --background: oklch(0.9531 0.0035 219.53);
+  --foreground: oklch(0.2451 0.0241 241.35);
+  --card: oklch(0.982 0.0022 219.5);
+  --card-foreground: oklch(0.2451 0.0241 241.35);
+  --popover: oklch(0.982 0.0022 219.5);
+  --popover-foreground: oklch(0.2451 0.0241 241.35);
+  --primary: oklch(0.2451 0.0241 241.35);
+  --primary-foreground: oklch(0.9531 0.0035 219.53);
+  --secondary: oklch(0.918 0.0048 219.5);
+  --secondary-foreground: oklch(0.2451 0.0241 241.35);
+  --muted: oklch(0.918 0.0048 219.5);
+  --muted-foreground: oklch(0.5 0.018 241);
+  --accent: oklch(0.918 0.0048 219.5);
+  --accent-foreground: oklch(0.2451 0.0241 241.35);
+  --destructive: oklch(0.5 0.19 25);
+  --border: oklch(0.8601 0.0117 217.56);
+  --input: oklch(0.8601 0.0117 217.56);
+  --ring: oklch(0.5 0.1 245);
+  --grid: oklch(0.898 0.009 218);
+  --grid-major: oklch(0.838 0.013 218);
+  --level-1: oklch(0.52 0.09 175);
+  --level-2: oklch(0.5 0.1 245);
+  --level-3: oklch(0.57 0.115 75);
+  --level-4: oklch(0.56 0.16 45);
+  --level-5: oklch(0.5 0.19 25);
+  --chart-1: oklch(0.5857 0.1841 35.5);
+  --chart-2: oklch(0.5237 0.086 179.14);
+  --chart-3: oklch(0.48 0.09 250);
+  --chart-4: oklch(0.6799 0.1381 75.21);
+  --chart-5: oklch(0.52 0.15 300);
 }
 
+/* 青焼き図面 */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.62 0.21 255);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --env-teal: oklch(0.72 0.14 180);
-  --env-sky: oklch(0.75 0.12 220);
-  --env-amber: oklch(0.8 0.16 85);
-  --env-orange: oklch(0.72 0.19 55);
-  --env-red: oklch(0.62 0.24 25);
+  --background: oklch(0.2103 0.0279 240.93);
+  --foreground: oklch(0.9211 0.0136 226.57);
+  --card: oklch(0.252 0.031 240);
+  --card-foreground: oklch(0.9211 0.0136 226.57);
+  --popover: oklch(0.252 0.031 240);
+  --popover-foreground: oklch(0.9211 0.0136 226.57);
+  --primary: oklch(0.9211 0.0136 226.57);
+  --primary-foreground: oklch(0.2103 0.0279 240.93);
+  --secondary: oklch(0.298 0.037 238);
+  --secondary-foreground: oklch(0.9211 0.0136 226.57);
+  --muted: oklch(0.298 0.037 238);
+  --muted-foreground: oklch(0.702 0.023 230);
+  --accent: oklch(0.298 0.037 238);
+  --accent-foreground: oklch(0.9211 0.0136 226.57);
+  --destructive: oklch(0.68 0.19 25);
+  --border: oklch(0.34 0.045 233);
+  --input: oklch(0.34 0.045 233);
+  --ring: oklch(0.74 0.105 245);
+  --grid: oklch(0.276 0.036 238);
+  --grid-major: oklch(0.318 0.042 236);
+  --level-1: oklch(0.76 0.11 175);
+  --level-2: oklch(0.74 0.105 245);
+  --level-3: oklch(0.8 0.13 80);
+  --level-4: oklch(0.74 0.155 48);
+  --level-5: oklch(0.68 0.19 25);
+  --chart-1: oklch(0.7 0.17 38);
+  --chart-2: oklch(0.72 0.1 185);
+  --chart-3: oklch(0.74 0.1 245);
+  --chart-4: oklch(0.78 0.13 78);
+  --chart-5: oklch(0.72 0.14 300);
 }
 
 @layer base {
@@ -111,16 +148,56 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    /* @theme inline は --font-sans を実体として出力しないため、明示的に当てる */
+    @apply bg-background font-sans text-foreground;
     font-feature-settings: "liga";
+  }
+  /* 観測値の桁位置を固定する。時計やグラフの目盛りが揺れないため */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
   }
 }
 
-/* DESIGN.md: カスケードリビールアニメーション */
-@keyframes card-in {
+/* 方眼の地。DESIGN.md § 4 */
+.grid-field {
+  background-color: var(--background);
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      var(--grid-major) 0 1px,
+      transparent 1px var(--spacing-grid-major)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--grid-major) 0 1px,
+      transparent 1px var(--spacing-grid-major)
+    ),
+    repeating-linear-gradient(
+      to right,
+      var(--grid) 0 1px,
+      transparent 1px var(--spacing-grid)
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--grid) 0 1px,
+      transparent 1px var(--spacing-grid)
+    );
+}
+
+/* DESIGN.md § 7 Motion */
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes reading-in {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -128,6 +205,29 @@
   }
 }
 
-.animate-card-in {
-  animation: card-in 700ms cubic-bezier(0.4, 0, 0.2, 1) both;
+/* 上から順に記入されていくように見せる段差。DESIGN.md § 7 */
+.stagger-1 {
+  animation-delay: calc(var(--stagger-step) * 0);
+}
+.stagger-2 {
+  animation-delay: calc(var(--stagger-step) * 1);
+}
+.stagger-3 {
+  animation-delay: calc(var(--stagger-step) * 2);
+}
+.stagger-4 {
+  animation-delay: calc(var(--stagger-step) * 3);
+}
+.stagger-5 {
+  animation-delay: calc(var(--stagger-step) * 4);
+}
+.stagger-6 {
+  animation-delay: calc(var(--stagger-step) * 5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rule-draw,
+  .animate-reading-in {
+    animation: none;
+  }
 }
