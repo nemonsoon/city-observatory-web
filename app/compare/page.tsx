@@ -314,7 +314,6 @@ export default function ComparePage() {
           <Panel label={`気温の推移 — ${leftCity.label}`}>
             {left.weatherQuery.data?.hourly ? (
               <WeatherChart
-                title={leftCity.label}
                 range="24h"
                 data={left.weatherQuery.data.hourly}
                 dataKey="temperature_2m"
@@ -329,7 +328,6 @@ export default function ComparePage() {
           <Panel label={`気温の推移 — ${rightCity.label}`}>
             {right.weatherQuery.data?.hourly ? (
               <WeatherChart
-                title={rightCity.label}
                 range="24h"
                 data={right.weatherQuery.data.hourly}
                 dataKey="temperature_2m"
@@ -346,7 +344,6 @@ export default function ComparePage() {
           <Panel label={`PM2.5 の推移 — ${leftCity.label}`}>
             {left.airSeries ? (
               <AQChart
-                title={leftCity.label}
                 data={left.airSeries}
                 dataKey="pm2_5"
                 range="24h"
@@ -361,7 +358,6 @@ export default function ComparePage() {
           <Panel label={`PM2.5 の推移 — ${rightCity.label}`}>
             {right.airSeries ? (
               <AQChart
-                title={rightCity.label}
                 data={right.airSeries}
                 dataKey="pm2_5"
                 range="24h"

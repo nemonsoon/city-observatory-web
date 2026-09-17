@@ -84,10 +84,12 @@ export function WeatherChart({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-baseline justify-between gap-grid">
-        <h3 className="font-display text-eyebrow uppercase text-muted-foreground">
-          {title ?? "気温"}
-        </h3>
+      <div className="flex items-baseline justify-between gap-grid empty:hidden">
+        {title ? (
+          <h3 className="font-display text-eyebrow uppercase text-muted-foreground">
+            {title}
+          </h3>
+        ) : null}
         {onRangeChange ? (
           <div className="flex border border-border">
             {(["24h", "7d"] as const).map((value) => (
