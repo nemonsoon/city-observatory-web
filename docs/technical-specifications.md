@@ -43,8 +43,9 @@
 | 技術           | バージョン | 用途                         |
 | -------------- | ---------- | ---------------------------- |
 | TanStack Query | ^5.102.8   | サーバー状態管理・キャッシュ |
-| jotai          | ^2.20.3    | グローバル状態（最小限）     |
 | zod            | ^4.5.4     | スキーマバリデーション       |
+
+グローバル状態の仕組みは入れていない。画面をまたいで持ち回る状態がなく、サーバー状態は TanStack Query が、画面内の状態は `useState` が持つ。必要になったときに何を入れるかは[コーディング規約](coding-guidelines.md)にある。
 
 ### 1.4 地図・可視化
 
@@ -56,15 +57,14 @@
 
 ### 1.5 開発・品質
 
-| 技術                   | バージョン | 用途                               |
-| ---------------------- | ---------- | ---------------------------------- |
-| eslint                 | ^9.39.5    | 静的解析                           |
-| prettier               | ^3.9.6     | コードフォーマット                 |
-| husky                  | ^9.1.7     | Git hooks                          |
-| lint-staged            | ^17.4.1    | ステージ済みファイルの自動チェック |
-| vitest                 | ^4.1.11    | ユニットテスト                     |
-| @testing-library/react | ^16.3.3    | コンポーネントのテスト             |
-| @playwright/test       | ^1.62.1    | 画面の確認（E2E）                  |
+| 技術             | バージョン | 用途                               |
+| ---------------- | ---------- | ---------------------------------- |
+| eslint           | ^9.39.5    | 静的解析                           |
+| prettier         | ^3.9.6     | コードフォーマット                 |
+| husky            | ^9.1.7     | Git hooks                          |
+| lint-staged      | ^17.4.1    | ステージ済みファイルの自動チェック |
+| vitest           | ^4.1.11    | ユニットテスト                     |
+| @playwright/test | ^1.62.1    | 画面の確認（E2E）                  |
 
 ## 2. アーキテクチャ
 
@@ -76,7 +76,7 @@ city-observatory-web/
 │   ├── layout.tsx                # ルートレイアウト（フォント読み込み、providers）
 │   ├── page.tsx                  # 単一都市の観測画面
 │   ├── compare/                  # 2都市の比較画面
-│   ├── providers.tsx             # TanStack Query + Jotai
+│   ├── providers.tsx             # TanStack Query
 │   ├── globals.css               # Tailwind v4 + デザイントークン
 │   ├── not-found.tsx
 │   ├── opengraph-image.tsx       # OGP 画像の生成
@@ -111,7 +111,7 @@ city-observatory-web/
 │   ├── validators/               # Zod スキーマ
 │   ├── constants/                # cities.ts, site.ts
 │   ├── utils.ts                  # cn() ヘルパー
-│   ├── utils/                    # formatting, timezone
+│   ├── utils/                    # timezone
 │   └── env.ts                    # 環境変数バリデーション
 │
 ├── tests/unit/domain/            # Vitest（純粋関数のテスト）

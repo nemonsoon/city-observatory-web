@@ -16,7 +16,7 @@ Related: [技術仕様書](technical-specifications.md) for the directory layout
 
 - Server Components are the default. Mark a Client Component with `"use client"` only when it needs browser APIs, state, or effects.
 - Use `useState` for local state by default.
-- Use `jotai` only when global state is unavoidable.
+- No global state library is installed, because nothing is shared across screens. If global state becomes unavoidable, add `jotai` rather than reaching for another library.
 - `useContext` is prohibited.
 - Use `useCallback`, `useMemo`, and `memo` when needed to avoid unnecessary re-renders.
   - If memoization is unnecessary (e.g., RSC), do not add it.
