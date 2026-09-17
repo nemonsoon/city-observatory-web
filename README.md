@@ -98,6 +98,12 @@ pnpm format:fix  # Prettier の自動整形
 
 PR の本文は [PR テンプレート](.github/pull_request_template.md)を使う。
 
+### 例外
+
+`.gitignore` と `.prettierignore` の変更だけは、Issue と PR を通さず `main` へ直接コミットしてよい。Git が追跡する範囲と整形の対象範囲を変えるだけで、アプリの動作にもドキュメントの内容にも影響しないため。
+
+`.env.example` と `.husky/` 配下はこの例外に含めない。`.env.example` は環境変数の正典として [API 仕様書](docs/api-specifications.md)から参照されるドキュメントであり、`.husky/` 配下はコミットとプッシュのたびに走る処理そのものなので、どちらも Issue 駆動で扱う。
+
 ```bash
 # Issue からブランチを作る
 gh issue develop <number> -b issue-<number>-<slug>
