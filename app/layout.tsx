@@ -1,18 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, Sometype_Mono, Zen_Kaku_Gothic_New } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SITE } from "@/lib/constants/site";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const sometypeMono = Sometype_Mono({
+  variable: "--font-sometype-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+// 和文は分割配信されるため preload を切り、表示に必要な範囲だけ取得する
+const zenKakuGothicNew = Zen_Kaku_Gothic_New({
+  variable: "--font-zen-kaku-gothic-new",
+  weight: ["400", "500", "700"],
+  preload: false,
+  display: "swap",
+  fallback: ["Hiragino Kaku Gothic ProN", "Hiragino Sans", "sans-serif"],
 });
 
 export const metadata: Metadata = {
@@ -44,9 +55,11 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   colorScheme: "light dark",
+  // DESIGN.md § 2 Foundation の background を sRGB 近似で書いたもの。
+  // meta タグは CSS 変数を参照できないため、ここだけ実値を持つ
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#edf0f1" },
+    { media: "(prefers-color-scheme: dark)", color: "#0c1a24" },
   ],
 };
 
@@ -58,7 +71,7 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${archivo.variable} ${sometypeMono.variable} ${zenKakuGothicNew.variable} antialiased`}
       >
         <ThemeProvider>
           <Providers>{children}</Providers>

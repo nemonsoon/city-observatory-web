@@ -52,3 +52,8 @@ CLAUDE.md
 # internal working notes (kept locally, not published)
 docs/development-checklist.md
 docs/ui-overhaul-plan.md
+
+# playwright
+/e2e/.output/
+/playwright-report/
+/test-results/
