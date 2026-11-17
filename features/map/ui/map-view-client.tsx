@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import { useTheme } from "next-themes";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { env } from "@/lib/env";
